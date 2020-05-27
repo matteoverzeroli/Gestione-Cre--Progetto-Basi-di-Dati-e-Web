@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Utente</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+<div class="login">
+    <table>
+        <tr>
+            <th>
+                Effettua il tuo login!
+            </th>
+        </tr>
+        <tr>
+            <th>
+                <br>
+                <form action="/login" method="post" id="loginForm">
+                    <label for="username">Username:</label>
+                    <input type="text" name="username" id="username" required pattern="[0-9]{5}" placeholder="Matricola"
+                           autofocus/>
+                    <br>
+                    <br>
+                    <label for="password">Password:</label>
+                    <input type="password" name="password" id="password" required pattern="[0-9a-Z]{5}"
+                           placeholder="Password"/>
+                    <br>
+                    <br>
+                    <input type="submit" value="Entra!" id="entra"/>
+                </form>
+            </th>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
