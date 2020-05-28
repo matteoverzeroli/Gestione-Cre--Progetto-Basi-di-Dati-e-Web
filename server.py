@@ -5,7 +5,7 @@ import sqlite3
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
-path = 'database.db';
+path = 'database.db'
 database = sqlite3.connect(path)
 cursor = database.cursor();
 
@@ -33,9 +33,13 @@ database.close();
 @app.route('/')
 def root():
     if 'amministratore' in session:
-        return render_template("homeAMMINISTRATORE.html")
+        return redirect(url_for('home_amministratore'))
     elif 'segretaria' in session:
-        return render_template("homeSEGRETARIA.html")
+        return redirect(url_for('home_segretaria'))
+    elif 'responsabile' in session:
+        return redirect(url_for('home_responsabile'))
+    elif 'esterno' in session:
+        return redirect(url_for('home_esterno'))
 
     return redirect(url_for('login'))
 
@@ -58,19 +62,22 @@ def login():
 
         elif rows[0][2] == "leader":
             session['amministratore'] = username;
-            return redirect(url_for('homeAMMINISTRATORE'))
+            return redirect(url_for('root'))
         elif rows[0][2] == "segretaria":
             session['segretaria'] = username;
-            print(session)
-            return redirect(url_for('homeSEGRETARIA'))
-        else:
-            return redirect(url_for('loginerrato'))
+            return redirect(url_for('root'))
+        elif rows[0][2] == "responsabile":
+            session['responsabile'] = username;
+            return redirect(url_for('root'))
+        elif rows[0][2] == "esterno":
+            session['esterno'] = username;
+            return redirect(url_for('root'))
 
     return render_template('login.html')
 
 
 @app.route('/homeAMMINISTRATORE', methods=['GET'])
-def homeAMMINISTRATORE():
+def home_amministratore():
     if 'amministratore' in session:
         return render_template("homeAMMINISTRATORE.html")
     else:
@@ -78,12 +85,25 @@ def homeAMMINISTRATORE():
 
 
 @app.route('/homeSEGRETARIA', methods=['GET'])
-def homeSEGRETARIA():
+def home_segretaria():
     if 'segretaria' in session:
         return render_template("homeSEGRETARIA.html")
     else:
         return redirect(url_for('login'))
 
+@app.route('/homeRESPONSABILE', methods=['GET'])
+def home_responsabile():
+    if 'responsabile' in session:
+        return render_template("homeRESPONSABILE.html")
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/homeESTERNO', methods=['GET'])
+def home_esterno():
+    if 'esterno' in session:
+        return render_template("homeESTERNO.html")
+    else:
+        return redirect(url_for('login'))
 
 @app.route('/loginerrato', methods=['GET'])
 def loginerrato():
@@ -95,7 +115,12 @@ def logout():
         session.pop('amministratore')
     elif 'segretaria' in session:
         session.pop('segretaria')
-    return redirect(url_for('login'))
+    elif 'responsabile' in session:
+        session.pop('responsabile')
+    elif 'esterno' in session:
+        session.pop('esterno')
+
+    return redirect(url_for('root'))
 
 
 app.run(host="127.0.0.1", port=5000)
