@@ -5,36 +5,34 @@
     <title>Login Utente</title>
 
     <!--<link rel="stylesheet" href="style.css"> -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}"/>
+
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
 </head>
 <body>
-<div class="login">
-    <table>
-        <tr>
-            <th>
-                Effettua il tuo login!
-            </th>
-        </tr>
-        <tr>
-            <th>
-                <br>
-                <form action="/login" method="post" id="loginForm">
-                    <label for="username">Username:</label>
-                    <input type="text" name="username" id="username" required pattern="[0-9]{5}" placeholder="Matricola"
-                           autofocus/>
-                    <br>
-                    <br>
-                    <label for="password">Password:</label>
-                    <input type="password" name="password" id="password" required pattern="[0-9a-Z]{5}"
-                           placeholder="Password"/>
-                    <br>
-                    <br>
-                    <input type="submit" value="Entra!" id="entra"/>
-                </form>
-            </th>
-        </tr>
-    </table>
-</div>
+
+
+
+    <div class="wrapper fadeInDown">
+      <div id="formContent">
+        <!-- Tabs Titles -->
+
+        <!-- Icon -->
+        <div class="fadeIn first">
+          <img src="http://danielzawadzki.com/codepen/01/icon.svg" id="icon" alt="User Icon" />
+        </div>
+
+        <!-- Login Form -->
+        <form action="/login" method="post" id="loginForm">
+            <input type="text" id="username" class="fadeIn second" name="username" placeholder="login">
+            <input type="text" id="password" class="fadeIn third" name="password" placeholder="password">
+            <input type="submit" class="fadeIn fourth" value="Log In">
+        </form>
+
+      </div>
+    </div>
 </body>
 </html>
