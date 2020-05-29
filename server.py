@@ -299,5 +299,12 @@ def logout():
 
     return redirect(url_for('root'))
 
+@app.route('/formInserisciSegretaria')
+def form_inserisci_segretaria():
+    if 'leader' in session:
+        return render_template("formInserisciSegretaria.html")
+    else:
+        return redirect(url_for('login'))
+
 
 app.run(host="127.0.0.1", port=5000)
