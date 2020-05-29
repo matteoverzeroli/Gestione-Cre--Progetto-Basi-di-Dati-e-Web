@@ -37,7 +37,7 @@ database.execute("CREATE TABLE IF NOT EXISTS ANIMATORE("
                  "NumTelefono INTEGER NOT NULL, "
                  "NumCellulare INTEGER, "
                  "MatrResponsabile CHAR(5) NOT NULL, "
-                 "NomeSquadra CHAR(10) NOT NULL,  "
+                 "NomeSquadra VARCHAR(10) NOT NULL,  "
                  "PRIMARY KEY (Matricola), "
                  "FOREIGN KEY (MatrResponsabile) "
                  "REFERENCES PERSONALE(Matricola), "
@@ -56,7 +56,7 @@ database.execute("CREATE TABLE IF NOT EXISTS BAMBINO("
                  "NumCellulare INTEGER, "
                  "NominativoMadre VARCHAR(50) NOT NULL, "
                  "NominativoPadre VARCHAR(50) NOT NULL, "
-                 "NomeSquadra CHAR(10) NOT NULL,  "
+                 "NomeSquadra VARCHAR(10) NOT NULL,  "
                  "PRIMARY KEY (Matricola) "
                  "FOREIGN KEY (NomeSquadra) "
                  "REFERENCES SQUADRA(Nome));")
@@ -173,6 +173,10 @@ def root():
         return redirect(url_for('home_responsabile'))
     elif ruolo_partecipanti[3] in session:
         return redirect(url_for('home_esterno'))
+    elif ruolo_partecipanti[4] in session:
+        return redirect(url_for('home_animatore'))
+    elif ruolo_partecipanti[5] in session:
+        return redirect(url_for('home_bambino'))
 
     return redirect(url_for('login'))
 
@@ -188,10 +192,24 @@ def login():
         cursor.execute("SELECT Matricola, Password, Ruolo  FROM PERSONALE WHERE Matricola = ? AND Password = ?",
                        [username, password])
         rows = cursor.fetchall()
-        database.close();
+
 
         if len(rows) == 0:
-            return redirect(url_for('loginerrato'))
+            cursor = database.cursor();
+            cursor.execute("SELECT Matricola, Password  FROM BAMBINO WHERE Matricola = ? AND Password = ?",
+                           [username, password])
+            rows = cursor.fetchall()
+            rows[0][2] = 'bambino'
+            if len(rows) == 0:
+                cursor.execute("SELECT Matricola, Password  FROM ANIMATORE WHERE Matricola = ? AND Password = ?",
+                               [username, password])
+                rows = cursor.fetchall()
+                database.close()
+                rows[0][2] = 'animatore'
+                if len(rows) == 0:
+                    return redirect(url_for('loginerrato'))
+
+
         for partecipante in ruolo_partecipanti:
             if rows[0][2] == partecipante:
                 session[partecipante] = username;
@@ -226,6 +244,20 @@ def home_responsabile():
 def home_esterno():
     if 'esterno' in session:
         return render_template("homeESTERNO.html")
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/homeANIMATORE', methods=['GET'])
+def home_animatore():
+    if 'animatore' in session:
+        return render_template("homeANIMATORE.html")
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/homeBAMBINO', methods=['GET'])
+def home_bambino():
+    if 'bambino' in session:
+        return render_template("homeBAMBINO.html")
     else:
         return redirect(url_for('login'))
 
