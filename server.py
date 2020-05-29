@@ -159,7 +159,7 @@ database.execute("CREATE TABLE IF NOT EXISTS ISCRIZIONE("
 #inserisco il leader se non già inserito
 try:
     cursor.execute(
-        "INSERT INTO PERSONALE VALUES ('00000','admin','Pinco','Pallino','admin@gmail.com','1/1/00','via bella n.5',03598456,340586969,'leader');")
+        "INSERT INTO PERSONALE VALUES ('00001','admin','Pinco','Pallino','admin@gmail.com','1/1/00','via bella n.5',03598456,340586969,'leader');")
     cursor.fetchall()
 except:
     pass
