@@ -9,19 +9,152 @@ path = 'database.db'
 database = sqlite3.connect(path)
 cursor = database.cursor();
 
+#definizione ruoli della popolazione di riferimento
+ruolo_partecipanti= ['leader', 'segretaria' ,'responsabile', 'esterno', 'animatore', 'bambino']
+
+#inizializzazione del database
 database.execute("CREATE TABLE IF NOT EXISTS PERSONALE("
                  "Matricola CHAR(5), "
                  "Password CHAR(5) NOT NULL, "
                  "Nome VARCHAR(50) NOT NULL, "
                  "Cognome VARCHAR(50) NOT NULL, "
+                 "Email VARCHAR(50) NOT NULL, "
                  "DataNascita DATE NOT NULL, "
                  "Indirizzo VARCHAR(50) NOT NULL, "
                  "NumTelefono INTEGER NOT NULL, "
+                 "NumCellulare INTEGER, "
                  "Ruolo VARCHAR(12) NOT NULL, "
-                 "PRIMARY KEY(Matricola));")
+                 "PRIMARY KEY (Matricola));")
+
+database.execute("CREATE TABLE IF NOT EXISTS ANIMATORE("
+                 "Matricola CHAR(5), "
+                 "Password CHAR(5) NOT NULL, "
+                 "Nome VARCHAR(50) NOT NULL, "
+                 "Cognome VARCHAR(50) NOT NULL, "
+                 "Email VARCHAR(50) NOT NULL, "
+                 "DataNascita DATE NOT NULL, "
+                 "Indirizzo VARCHAR(50) NOT NULL, "
+                 "NumTelefono INTEGER NOT NULL, "
+                 "NumCellulare INTEGER, "
+                 "MatrResponsabile CHAR(5) NOT NULL, "
+                 "NomeSquadra CHAR(10) NOT NULL,  "
+                 "PRIMARY KEY (Matricola), "
+                 "FOREIGN KEY (MatrResponsabile) "
+                 "REFERENCES PERSONALE(Matricola), "
+                 "FOREIGN KEY (NomeSquadra) "
+                 "REFERENCES SQUADRA(Nome));")
+
+database.execute("CREATE TABLE IF NOT EXISTS BAMBINO("
+                 "Matricola CHAR(5), "
+                 "Password CHAR(5) NOT NULL, "
+                 "Nome VARCHAR(50) NOT NULL, "
+                 "Cognome VARCHAR(50) NOT NULL, "
+                 "Email VARCHAR(50) NOT NULL, "
+                 "DataNascita DATE NOT NULL, "
+                 "Indirizzo VARCHAR(50) NOT NULL, "
+                 "NumTelefono INTEGER NOT NULL, "
+                 "NumCellulare INTEGER, "
+                 "NominativoMadre VARCHAR(50) NOT NULL, "
+                 "NominativoPadre VARCHAR(50) NOT NULL, "
+                 "NomeSquadra CHAR(10) NOT NULL,  "
+                 "PRIMARY KEY (Matricola) "
+                 "FOREIGN KEY (NomeSquadra) "
+                 "REFERENCES SQUADRA(Nome));")
+
+database.execute("CREATE TABLE IF NOT EXISTS MOVIMENTO("
+                 "Id INTEGER primary key AUTOINCREMENT, "
+                 "TipoEvento VARCHAR(10), "
+                 "Luogo VARCHAR(50),"
+                 "Data DATE,"
+                 "Ora TIME,"
+                 "Descrizione VARCHAR(50) NOT NULL,"
+                 "Valore FLOAT NOT NULL,"
+                 "Inout BIT NOT NULL,"
+                 "MatrSegretaria CHAR(5) NOT NULL,"
+                 "FOREIGN KEY (TipoEvento,Luogo,Data,Ora) "
+                 "REFERENCES EVENTO(TipoEvento,Luogo,Data,Ora),"
+                 "FOREIGN KEY (MatrSegretaria) "
+                 "REFERENCES PERSONALE(Matricola));")
+
+database.execute("CREATE TABLE IF NOT EXISTS EVENTO("
+                 "TipoEvento VARCHAR(10), "
+                 "Luogo VARCHAR(50),"
+                 "Data DATE,"
+                 "Ora TIME,"
+                 "Descrizione VARCHAR(50) NOT NULL,"
+                 "Punteggio INTEGER NOT NULL,"
+                 "MatrLeader CHAR(5) NOT NULL, "
+                 "PRIMARY KEY (TipoEvento,Luogo,Data,Ora),"
+                 "FOREIGN KEY (MatrLeader) "
+                 "REFERENCES PERSONALE(Matricola));")
+
+database.execute("CREATE TABLE IF NOT EXISTS SQUADRA("
+                 "Nome VARCHAR(10),"
+                 "Punteggio INTEGER DEFAULT 0,"
+                 "Colore VARCHAR(10) NOT NULL,"
+                 "Motto VARCHAR(50) NOT NULL,"
+                 "PRIMARY KEY (Nome));")
+
+database.execute("CREATE TABLE IF NOT EXISTS APPELLOBAMBINO("
+                 "IdBambino CHAR(5) REFERENCES BAMBINO(Matricola),"
+                 "Data DATA NOT NULL,"
+                 "Presenza BIT NOT NULL,"
+                 "PRIMARY KEY (IdBambino));")
+
+database.execute("CREATE TABLE IF NOT EXISTS APPELLOANIMATORE("
+                 "IdAnimatore CHAR(5) REFERENCES ANIMATORE(Matricola),"
+                 "Data DATA NOT NULL,"
+                 "Presenza BIT NOT NULL,"
+                 "PRIMARY KEY (IdAnimatore));")
+
+database.execute("CREATE TABLE IF NOT EXISTS APPELLOPERSONALE("
+                 "IdPersonale CHAR(5) REFERENCES PERSONALE(Matricola),"
+                 "Data DATA NOT NULL,"
+                 "Presenza BIT NOT NULL,"
+                 "PRIMARY KEY (IdPersonale));")
+
+database.execute("CREATE TABLE IF NOT EXISTS ARBITRA("
+                 "MatrResponsabile CHAR(5) REFERENCES PERSONALE(Matricola),"
+                 "TipoEvento VARCHAR(10) NOT NULL, "
+                 "Luogo VARCHAR(50) NOT NULL,"
+                 "Data DATE NOT NULL,"
+                 "Ora TIME NOT NULL,"
+                 "FOREIGN KEY (TipoEvento,Luogo,Data,Ora)"
+                 "REFERENCES EVENTO(TipoEvento,Lugo,Data,Ora));")
+
+database.execute("CREATE TABLE IF NOT EXISTS GESTISCE("
+                 "MatrEsterno CHAR(5) REFERENCES PERSONALE(Matricola),"
+                 "TipoEvento VARCHAR(10) NOT NULL, "
+                 "Luogo VARCHAR(50) NOT NULL,"
+                 "Data DATE NOT NULL,"
+                 "Ora TIME NOT NULL,"
+                 "FOREIGN KEY (TipoEvento,Luogo,Data,Ora)"
+                 "REFERENCES EVENTO(TipoEvento,Lugo,Data,Ora));")
+
+database.execute("CREATE TABLE IF NOT EXISTS PARTECIPA("
+                 "MatrBamnino CHAR(5) REFERENCES BAMBINO(Matricola),"
+                 "TipoEvento VARCHAR(10) NOT NULL, "
+                 "Luogo VARCHAR(50) NOT NULL,"
+                 "Data DATE NOT NULL,"
+                 "Ora TIME NOT NULL,"
+                 "Costo FLOAT NOT NULL,"
+                 "Scadenza DATE NOT NULL, "
+                 "FOREIGN KEY (TipoEvento,Luogo,Data,Ora)"
+                 "REFERENCES EVENTO(TipoEvento,Lugo,Data,Ora));")
+
+database.execute("CREATE TABLE IF NOT EXISTS ISCRIZIONE("
+                 "NomeSquadra VARCHAR(10) REFERENCES SQUADRA(Nome),"
+                 "TipoEvento VARCHAR(10) NOT NULL, "
+                 "Luogo VARCHAR(50) NOT NULL,"
+                 "Data DATE NOT NULL,"
+                 "Ora TIME NOT NULL,"
+                 "FOREIGN KEY (TipoEvento,Luogo,Data,Ora)"
+                 "REFERENCES EVENTO(TipoEvento,Lugo,Data,Ora));")
+
+#inserisco il leader se non già inserito
 try:
     cursor.execute(
-        "INSERT INTO PERSONALE VALUES ('00000','admin','Pinco','Pallino','1/1/00','via bella n.5',03598456,'leader');")
+        "INSERT INTO PERSONALE VALUES ('00000','admin','Pinco','Pallino','admin@gmail.com','1/1/00','via bella n.5',03598456,340586969,'leader');")
     cursor.fetchall();
 except:
     pass
@@ -32,13 +165,13 @@ database.close();
 
 @app.route('/')
 def root():
-    if 'amministratore' in session:
-        return redirect(url_for('home_amministratore'))
-    elif 'segretaria' in session:
+    if ruolo_partecipanti[0] in session:
+        return redirect(url_for('home_leader'))
+    elif ruolo_partecipanti[1] in session:
         return redirect(url_for('home_segretaria'))
-    elif 'responsabile' in session:
+    elif ruolo_partecipanti[2] in session:
         return redirect(url_for('home_responsabile'))
-    elif 'esterno' in session:
+    elif ruolo_partecipanti[3] in session:
         return redirect(url_for('home_esterno'))
 
     return redirect(url_for('login'))
@@ -59,27 +192,18 @@ def login():
 
         if len(rows) == 0:
             return redirect(url_for('loginerrato'))
-
-        elif rows[0][2] == "leader":
-            session['amministratore'] = username;
-            return redirect(url_for('root'))
-        elif rows[0][2] == "segretaria":
-            session['segretaria'] = username;
-            return redirect(url_for('root'))
-        elif rows[0][2] == "responsabile":
-            session['responsabile'] = username;
-            return redirect(url_for('root'))
-        elif rows[0][2] == "esterno":
-            session['esterno'] = username;
-            return redirect(url_for('root'))
+        for partecipante in ruolo_partecipanti:
+            if rows[0][2] == partecipante:
+                session[partecipante] = username;
+                return redirect(url_for('root'))
 
     return render_template('login.html')
 
 
-@app.route('/homeAMMINISTRATORE', methods=['GET'])
-def home_amministratore():
-    if 'amministratore' in session:
-        return render_template("homeAMMINISTRATORE.html")
+@app.route('/homeLEADER', methods=['GET'])
+def home_leader():
+    if 'leader' in session:
+        return render_template("homeLEADER.html")
     else:
         return redirect(url_for('login'))
 
@@ -111,14 +235,9 @@ def loginerrato():
 
 @app.route('/logout', methods=['GET'])
 def logout():
-    if 'amministratore' in session:
-        session.pop('amministratore')
-    elif 'segretaria' in session:
-        session.pop('segretaria')
-    elif 'responsabile' in session:
-        session.pop('responsabile')
-    elif 'esterno' in session:
-        session.pop('esterno')
+    for partecipante in ruolo_partecipanti:
+        if partecipante in session:
+            session.pop(partecipante)
 
     return redirect(url_for('root'))
 
