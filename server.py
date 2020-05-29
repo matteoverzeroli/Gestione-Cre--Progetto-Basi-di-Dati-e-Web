@@ -12,6 +12,11 @@ cursor = database.cursor();
 #definizione ruoli della popolazione di riferimento
 ruolo_partecipanti= ['leader', 'segretaria' ,'responsabile', 'esterno', 'animatore', 'bambino']
 
+#totale partecimanti
+totale_personale = 0;
+totale_bambini = 0 ;
+totale_animatori = 0;
+
 #inizializzazione del database
 database.execute("CREATE TABLE IF NOT EXISTS PERSONALE("
                  "Matricola CHAR(5), "
@@ -155,13 +160,27 @@ database.execute("CREATE TABLE IF NOT EXISTS ISCRIZIONE("
 try:
     cursor.execute(
         "INSERT INTO PERSONALE VALUES ('00000','admin','Pinco','Pallino','admin@gmail.com','1/1/00','via bella n.5',03598456,340586969,'leader');")
-    cursor.fetchall();
+    cursor.fetchall()
 except:
     pass
 
-database.commit();
-database.close();
+database.commit()
 
+
+#calcolo numero partecipanti
+cursor.execute("SELECT count(*)  FROM PERSONALE")
+rows = cursor.fetchone()
+totale_personale += int(str(rows[0]))
+
+cursor.execute("SELECT count(*)  FROM ANIMATORE")
+rows = cursor.fetchone()
+totale_animatori += int(str(rows[0]))
+
+cursor.execute("SELECT count(*)  FROM BAMBINO")
+rows = cursor.fetchone()
+totale_bambini += int(str(rows[0]))
+
+database.close()
 
 @app.route('/')
 def root():
@@ -192,26 +211,33 @@ def login():
         cursor.execute("SELECT Matricola, Password, Ruolo  FROM PERSONALE WHERE Matricola = ? AND Password = ?",
                        [username, password])
         rows = cursor.fetchall()
-
-
-        if len(rows) == 0:
+        if len(rows) != 0:
+            rows = rows[0][0], rows[0][1], rows[0][2]
+        else:
             cursor = database.cursor();
             cursor.execute("SELECT Matricola, Password  FROM BAMBINO WHERE Matricola = ? AND Password = ?",
                            [username, password])
             rows = cursor.fetchall()
-            rows[0][2] = 'bambino'
-            if len(rows) == 0:
+
+            if len(rows) != 0:
+                rows = rows[0][0],rows[0][1],'bambino'
+
+            else:
                 cursor.execute("SELECT Matricola, Password  FROM ANIMATORE WHERE Matricola = ? AND Password = ?",
                                [username, password])
                 rows = cursor.fetchall()
-                database.close()
-                rows[0][2] = 'animatore'
-                if len(rows) == 0:
+
+                if len(rows) != 0:
+                    rows = rows[0][0],rows[0][1],'animatore'
+                    print(rows)
+                else:
+                    database.close()
                     return redirect(url_for('loginerrato'))
 
+        database.close()
 
         for partecipante in ruolo_partecipanti:
-            if rows[0][2] == partecipante:
+            if rows[2] == partecipante:
                 session[partecipante] = username;
                 return redirect(url_for('root'))
 
