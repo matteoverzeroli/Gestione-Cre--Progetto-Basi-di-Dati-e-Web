@@ -302,7 +302,7 @@ def logout():
 @app.route('/formInserisciSegretaria')
 def form_inserisci_segretaria():
     if 'leader' in session:
-        return render_template("formInserisciSegretaria.html")
+        return render_template("formInserisciSegretaria.html", matricola = str(totale_personale + totale_bambini + totale_animatori).zfill(5))
     else:
         return redirect(url_for('login'))
 
