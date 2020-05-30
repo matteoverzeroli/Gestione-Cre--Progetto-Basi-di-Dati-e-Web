@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Crea Gioco</title>
-   <link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/dashboard/">
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/dashboard/">
 
     <!-- Bootstrap core CSS -->
     <!--<link href="/docs/4.5/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -106,21 +106,35 @@
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">{{ nomecognome }}</h1>
+                <h1 class="h2">{{usernamesession}}</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group mr-2">
-                        <button type="button" class="btn btn-sm btn-outline-secondary">Pippo</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary">Pluto</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Totale Partecipanti:
+                            {{totalepartecipanti}}
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Totale Leader: {{totaleleader}}
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Totale Segretarie:
+                            {{totalesegretarie}}
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Totale Responsabili:
+                            {{totaleresponsabili}}
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Totale Esterni:
+                            {{totaleesterni}}
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Totale Animatori:
+                            {{totaleanimatori}}
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Totale Bambini:
+                            {{totalebambini}}
+                        </button>
                     </div>
-                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                        <span data-feather="calendar"></span>
-                        Paperino
-                    </button>
                 </div>
             </div>
 
             <h2>Crea Gioco</h2>
-            <form method="post" id = "segretariaForm">
+            <form method="post" id="segretariaForm">
                 <div class="form-group">
                     <label for="tipoGioco">Seleziona Gioco</label>
                     <select class="form-control" id="tipoGioco">
@@ -134,18 +148,21 @@
                 </div>
                 <div class="form-group">
                     <label for="luogo">Luogo</label>
-                    <input type="text" class="form-control" id="luogo" placeholder="Palestra di via PincoPallo" required maxlength="50">
+                    <input type="text" class="form-control" id="luogo" placeholder="Palestra di via PincoPallo" required
+                           maxlength="50">
                 </div>
                 <div class="it-datepicker-wrapper">
                     <div class="form-group">
                         <label for="date">Data</label>
-                        <input class="form-control it-date-datepicker" id="date" type="date" placeholder="gg/mm/aaaa" required >
+                        <input class="form-control it-date-datepicker" id="date" type="date" placeholder="gg/mm/aaaa"
+                               required>
                     </div>
                 </div>
                 <div class="it-timepicker-wrapper">
                     <div class="form-group">
                         <label for="time">Data</label>
-                        <input class="form-control it-time-datepicker" id="time" type="time"  placeholder="hh/mm" required >
+                        <input class="form-control it-time-datepicker" id="time" type="time" placeholder="hh/mm"
+                               required>
                     </div>
                 </div>
                 <div class="form-group">

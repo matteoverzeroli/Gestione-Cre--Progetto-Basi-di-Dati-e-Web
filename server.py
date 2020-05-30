@@ -7,15 +7,21 @@ app.secret_key = os.urandom(24)
 
 path = 'database.db'
 database = sqlite3.connect(path)
-cursor = database.cursor();
+cursor = database.cursor()
 
 # definizione ruoli della popolazione di riferimento
 ruolo_partecipanti = ['leader', 'segretaria', 'responsabile', 'esterno', 'animatore', 'bambino']
 
 # totale partecimanti
-totale_personale = 0;
+totale_leader = 0;
+totale_segretarie = 0;
+totale_responsabili = 0;
+totale_esterni = 0;
 totale_bambini = 0;
 totale_animatori = 0;
+
+# cerco matricola massima utilizzata
+matricola_max = 0
 
 # inizializzazione del database
 database.execute("CREATE TABLE IF NOT EXISTS PERSONALE("
@@ -137,7 +143,7 @@ database.execute("CREATE TABLE IF NOT EXISTS GESTISCE("
                  "REFERENCES EVENTO(TipoEvento,Lugo,Data,Ora));")
 
 database.execute("CREATE TABLE IF NOT EXISTS PARTECIPA("
-                 "MatrBamnino CHAR(5) REFERENCES BAMBINO(Matricola),"
+                 "MatrBambino CHAR(5) REFERENCES BAMBINO(Matricola),"
                  "TipoEvento VARCHAR(10) NOT NULL, "
                  "Luogo VARCHAR(50) NOT NULL,"
                  "Data DATE NOT NULL,"
@@ -167,9 +173,21 @@ except:
 database.commit()
 
 # calcolo numero partecipanti
-cursor.execute("SELECT count(*)  FROM PERSONALE")
+cursor.execute("SELECT count(*)  FROM PERSONALE WHERE Ruolo = 'leader' ")
 rows = cursor.fetchone()
-totale_personale += int(str(rows[0]))
+totale_leader += int(str(rows[0]))
+
+cursor.execute("SELECT count(*)  FROM PERSONALE WHERE Ruolo = 'segretaria' ")
+rows = cursor.fetchone()
+totale_segretarie += int(str(rows[0]))
+
+cursor.execute("SELECT count(*)  FROM PERSONALE WHERE Ruolo = 'responsabile' ")
+rows = cursor.fetchone()
+totale_responsabili += int(str(rows[0]))
+
+cursor.execute("SELECT count(*)  FROM PERSONALE WHERE Ruolo = 'esterno' ")
+rows = cursor.fetchone()
+totale_esterni += int(str(rows[0]))
 
 cursor.execute("SELECT count(*)  FROM ANIMATORE")
 rows = cursor.fetchone()
@@ -178,6 +196,35 @@ totale_animatori += int(str(rows[0]))
 cursor.execute("SELECT count(*)  FROM BAMBINO")
 rows = cursor.fetchone()
 totale_bambini += int(str(rows[0]))
+
+# cerco la matricola massima utilizzata all'interno del db
+cursor.execute("SELECT Matricola  FROM PERSONALE ORDER BY Matricola desc")
+rows = cursor.fetchone();
+if rows is not None:
+    rows = int(str(rows[0]))
+    if rows > matricola_max:
+        matricola_max = rows
+
+cursor.execute("SELECT Matricola  FROM ANIMATORE ORDER BY Matricola desc")
+rows = cursor.fetchone();
+if rows is not None:
+    rows = int(str(rows[0]))
+    if rows > matricola_max:
+        matricola_max = rows
+
+cursor.execute("SELECT Matricola  FROM BAMBINO ORDER BY Matricola desc")
+rows = cursor.fetchone();
+if rows is not None:
+    rows = int(str(rows[0]))
+    if rows > matricola_max:
+        matricola_max = rows
+
+cursor.execute("SELECT Matricola  FROM ANIMATORE ORDER BY Matricola desc")
+rows = cursor.fetchone();
+if rows is not None:
+    rows = int(str(rows[0]))
+    if rows > matricola_max:
+        matricola_max = rows
 
 database.close()
 
@@ -208,28 +255,34 @@ def login():
 
         database = sqlite3.connect(path)
         cursor = database.cursor();
-        cursor.execute("SELECT Matricola, Password, Ruolo  FROM PERSONALE WHERE Matricola = ? AND Password = ?",
-                       [username, password])
+        cursor.execute(
+            "SELECT Matricola, Password,Nome,Cognome,Ruolo, Email,DataNascita,Indirizzo,NumTelefono,NumCellulare  FROM PERSONALE WHERE Matricola = ? AND Password = ?",
+            [username, password])
         rows = cursor.fetchall()
         if len(rows) != 0:
-            rows = rows[0][0], rows[0][1], rows[0][2]
+            rows = rows[0][0], rows[0][1], rows[0][2], rows[0][3], rows[0][4], rows[0][5], rows[0][6], rows[0][7], \
+                   rows[0][8], rows[0][9]
         else:
             cursor = database.cursor();
-            cursor.execute("SELECT Matricola, Password  FROM BAMBINO WHERE Matricola = ? AND Password = ?",
-                           [username, password])
+            cursor.execute(
+                "SELECT Matricola, Password,Nome,Cognome,Email,DAtaNascita,Indirizzo,NumTelefono,NumCellulare,NominativoMadre,NominativoPadre,NomeSquadra  FROM BAMBINO WHERE Matricola = ? AND Password = ?",
+                [username, password])
             rows = cursor.fetchall()
 
             if len(rows) != 0:
-                rows = rows[0][0], rows[0][1], 'bambino'
+                rows = rows[0][0], rows[0][1], rows[0][2], rows[0][3], 'bambino', rows[0][4], rows[0][5], rows[0][6], \
+                       rows[0][7], rows[0][8], rows[0][9], rows[0][10], rows[0][11]
 
             else:
-                cursor.execute("SELECT Matricola, Password  FROM ANIMATORE WHERE Matricola = ? AND Password = ?",
-                               [username, password])
+                cursor.execute(
+                    "SELECT Matricola, Password,Nome,Cognome,Email,DataNascita,Indirizzo,NumTelefono,NumCellulare,MatrResponsabile,NomeSquadra  FROM ANIMATORE WHERE Matricola = ? AND Password = ?",
+                    [username, password])
                 rows = cursor.fetchall()
 
                 if len(rows) != 0:
-                    rows = rows[0][0], rows[0][1], 'animatore'
-                    print(rows)
+                    rows = rows[0][0], rows[0][1], rows[0][2], rows[0][3], 'animatore', rows[0][4], rows[0][5], rows[0][
+                        6], \
+                           rows[0][7], rows[0][8], rows[0][9], rows[0][10]
                 else:
                     database.close()
                     return redirect(url_for('loginerrato'))
@@ -237,8 +290,25 @@ def login():
         database.close()
 
         for partecipante in ruolo_partecipanti:
-            if rows[2] == partecipante:
-                session[partecipante] = username;
+            if rows[4] == partecipante:
+                session[partecipante] = username
+                session['matricola'] = username
+                session['password'] = password
+                session['nome'] = rows[2]
+                session['cognome'] = rows[3]
+                session['email'] = rows[5]
+                session['dataNascita'] = rows[6]
+                session['indirizzo'] = rows[7]
+                session['numTelefono'] = rows[8]
+                session['numCellulare'] = rows[9]
+                if rows[4] == 'bambino':
+                    session['nominativoMadre'] = rows[10]
+                    session['nominativoPadre'] = rows[11]
+                    session['nomeSquadra'] = rows[12]
+                elif rows[4] == 'animatore':
+                    session['matrResponsabile'] = rows[10]
+                    session['nomeSquadra'] = rows[11]
+
                 return redirect(url_for('root'))
 
     return render_template('login.html')
@@ -247,7 +317,17 @@ def login():
 @app.route('/homeLEADER', methods=['GET'])
 def home_leader():
     if 'leader' in session:
-        return render_template("homeLEADER.html")
+        print(session)
+        return render_template("homeLEADER.html", usernamesession=session['nome'] + " " + session
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                               cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
+                               indirizzo=session['indirizzo'],
+                               telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader, totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini)
     else:
         return redirect(url_for('login'))
 
@@ -323,17 +403,30 @@ def form_inserisci_segretaria():
         cursor = database.cursor()
         cursor.execute(
             "INSERT INTO PERSONALE VALUES (?,?,?,?,?,?,?,?,?,?);",
-                [matricola,password,nome,cognome,email,data,indirizzo,telefono,cellulare,'segretaria'])
+            [matricola, password, nome, cognome, email, data, indirizzo, telefono, cellulare, 'segretaria'])
 
         cursor.fetchall()
         database.commit()
         database.close()
 
+        global totale_segretarie
+        totale_segretarie += 1
+
+        global matricola_max
+        matricola_max += 1
+
         return redirect(url_for('form_inserisci_segretaria'))
 
     if 'leader' in session:
         return render_template("formInserisciSegretaria.html",
-                               matricola=str(totale_personale + totale_bambini + totale_animatori + 1).zfill(5))
+                               matricola=str((matricola_max + 1)).zfill(5),
+                               usernamesession=session['nome'] + " " + session
+                               ['cognome'], totalepartecipanti=(
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader, totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini)
     else:
         return redirect(url_for('login'))
 
@@ -341,7 +434,13 @@ def form_inserisci_segretaria():
 @app.route('/formCreaGita')
 def form_crea_gita():
     if 'leader' in session:
-        return render_template("formCreaGita.html")
+        return render_template("formCreaGita.html", usernamesession=session['nome'] + " " + session
+        ['cognome'], totalepartecipanti=(
+                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader, totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini)
     else:
         return redirect(url_for('login'))
 
@@ -349,7 +448,13 @@ def form_crea_gita():
 @app.route('/formCreaGioco')
 def form_crea_gioco():
     if 'leader' in session:
-        return render_template("formCreaGioco.html")
+        return render_template("formCreaGioco.html", usernamesession=session['nome'] + " " + session
+        ['cognome'], totalepartecipanti=(
+                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader, totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini)
     else:
         return redirect(url_for('login'))
 
@@ -357,7 +462,13 @@ def form_crea_gioco():
 @app.route('/formCreaLaboratorio')
 def form_crea_laboratorio():
     if 'leader' in session:
-        return render_template("formCreaLaboratorio.html")
+        return render_template("formCreaLaboratorio.html", usernamesession=session['nome'] + " " + session
+        ['cognome'], totalepartecipanti=(
+                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader, totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini)
     else:
         return redirect(url_for('login'))
 

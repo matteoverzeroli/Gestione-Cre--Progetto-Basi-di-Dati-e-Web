@@ -2,10 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
-    <meta name="generator" content="Jekyll v4.0.1">
 
     <title>Inserisci segretaria</title>
 
@@ -103,16 +99,30 @@
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">{{ nomecognome }}</h1>
+                <h1 class="h2">{{usernamesession}}</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group mr-2">
-                        <button type="button" class="btn btn-sm btn-outline-secondary">Pippo</button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary">Pluto</button>
+                       <button type="button" class="btn btn-sm btn-outline-secondary">Totale Partecipanti:
+                            {{totalepartecipanti}}
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Totale Leader: {{totaleleader}}
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Totale Segretarie:
+                            {{totalesegretarie}}
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Totale Responsabili:
+                            {{totaleresponsabili}}
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Totale Esterni:
+                            {{totaleesterni}}
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Totale Animatori:
+                            {{totaleanimatori}}
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Totale Bambini:
+                            {{totalebambini}}
+                        </button>
                     </div>
-                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                        <span data-feather="calendar"></span>
-                        Paperino
-                    </button>
                 </div>
             </div>
 
@@ -124,7 +134,7 @@
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" name = 'password' class="form-control" id="password" placeholder="Password" required pattern="[a-zA-z0-9]{5}">
+                    <input type="password" name = 'password' class="form-control" id="password" placeholder="Password" value="{{password}}" required pattern="[a-zA-z0-9]{5}">
                 </div>
                 <div class="form-group">
                     <label for="nome">Nome</label>
