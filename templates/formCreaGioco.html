@@ -137,7 +137,7 @@
             <form method="post" id="segretariaForm">
                 <div class="form-group">
                     <label for="tipoGioco">Seleziona Gioco</label>
-                    <select class="form-control" id="tipoGioco">
+                    <select class="form-control" name="tipoGioco" id="tipoGioco">
                         <option selected value="">Scegli...</option>
                         <option>Calcio</option>
                         <option>Pallavolo</option>
@@ -148,30 +148,30 @@
                 </div>
                 <div class="form-group">
                     <label for="luogo">Luogo</label>
-                    <input type="text" class="form-control" id="luogo" placeholder="Palestra di via PincoPallo" required
+                    <input type="text" name="luogo" class="form-control" id="luogo" placeholder="Palestra di via PincoPallo" required
                            maxlength="50">
                 </div>
                 <div class="it-datepicker-wrapper">
                     <div class="form-group">
                         <label for="date">Data</label>
-                        <input class="form-control it-date-datepicker" id="date" type="date" placeholder="gg/mm/aaaa"
+                        <input class="form-control it-date-datepicker" name="date" id="date" type="date" placeholder="gg/mm/aaaa"
                                required>
                     </div>
                 </div>
                 <div class="it-timepicker-wrapper">
                     <div class="form-group">
                         <label for="time">Data</label>
-                        <input class="form-control it-time-datepicker" id="time" type="time" placeholder="hh/mm"
+                        <input class="form-control it-time-datepicker" name="time" id="time" type="time" placeholder="hh/mm"
                                required>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="descrizione">Descrizione</label>
-                    <textarea class="form-control" id="descrizione" rows="3" required maxlength="50"></textarea>
+                    <textarea class="form-control"  name="descrizione" id="descrizione" rows="3" required maxlength="50"></textarea>
                 </div>
                 <div class="form-group">
                     <label for="punteggio">Punteggio</label>
-                    <select class="form-control" id="punteggio">
+                    <select class="form-control" name="punteggio"id="punteggio">
                         <option>0</option>
                         <option>1</option>
                         <option>2</option>

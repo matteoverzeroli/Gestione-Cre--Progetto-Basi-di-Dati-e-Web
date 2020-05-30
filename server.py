@@ -453,8 +453,11 @@ def form_inserisci_segretaria():
         return redirect(url_for('login'))
 
 
-@app.route('/formCreaGita')
+@app.route('/formCreaGita', methods=['GET', 'POST'])
 def form_crea_gita():
+    if request.method == 'POST':
+        tipoGita = request.form['tipoGita']
+
     if 'leader' in session:
         return render_template("formCreaGita.html", usernamesession=session['nome'] + " " + session
         ['cognome'], totalepartecipanti=(
@@ -469,6 +472,7 @@ def form_crea_gita():
 
 @app.route('/formCreaGioco')
 def form_crea_gioco():
+
     if 'leader' in session:
         return render_template("formCreaGioco.html", usernamesession=session['nome'] + " " + session
         ['cognome'], totalepartecipanti=(
