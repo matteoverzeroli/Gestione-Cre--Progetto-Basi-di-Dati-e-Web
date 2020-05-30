@@ -229,6 +229,27 @@ if rows is not None:
 database.close()
 
 
+# funzione per aggiornare dati inseriti nella session
+def updateSessionData(partecipante,rows):
+    session[partecipante] = rows[0]
+    session['matricola'] = rows[0]
+    session['password'] = rows[1]
+    session['nome'] = rows[2]
+    session['cognome'] = rows[3]
+    session['email'] = rows[5]
+    session['dataNascita'] = rows[6]
+    session['indirizzo'] = rows[7]
+    session['numTelefono'] = rows[8]
+    session['numCellulare'] = rows[9]
+    if rows[4] == 'bambino':
+        session['nominativoMadre'] = rows[10]
+        session['nominativoPadre'] = rows[11]
+        session['nomeSquadra'] = rows[12]
+    elif rows[4] == 'animatore':
+        session['matrResponsabile'] = rows[10]
+        session['nomeSquadra'] = rows[11]
+
+
 @app.route('/')
 def root():
     if ruolo_partecipanti[0] in session:
@@ -291,33 +312,35 @@ def login():
 
         for partecipante in ruolo_partecipanti:
             if rows[4] == partecipante:
-                session[partecipante] = username
-                session['matricola'] = username
-                session['password'] = password
-                session['nome'] = rows[2]
-                session['cognome'] = rows[3]
-                session['email'] = rows[5]
-                session['dataNascita'] = rows[6]
-                session['indirizzo'] = rows[7]
-                session['numTelefono'] = rows[8]
-                session['numCellulare'] = rows[9]
-                if rows[4] == 'bambino':
-                    session['nominativoMadre'] = rows[10]
-                    session['nominativoPadre'] = rows[11]
-                    session['nomeSquadra'] = rows[12]
-                elif rows[4] == 'animatore':
-                    session['matrResponsabile'] = rows[10]
-                    session['nomeSquadra'] = rows[11]
-
+                updateSessionData(partecipante,rows)
                 return redirect(url_for('root'))
 
     return render_template('login.html')
 
 
-@app.route('/homeLEADER', methods=['GET'])
+@app.route('/homeLEADER', methods=['GET', 'POST'])
 def home_leader():
+    if request.method == 'POST' and 'form_modifica' in request.form:
+        database = sqlite3.connect(path)
+        cursor = database.cursor();
+        cursor.execute(
+            "UPDATE PERSONALE SET Password = ?, Nome = ?, Cognome = ?, Email = ?, DataNascita = ?, Indirizzo = ?, NumTelefono = ?, NumCellulare = ? WHERE Matricola = ?;",
+            [request.form['password'],request.form['nome'], request.form['cognome'], request.form['email'], request.form['data'],
+             request.form['indirizzo'], request.form['telefono'], request.form['cellulare'], request.form['matricola']])
+        rows= request.form['matricola'],request.form['password'],request.form['nome'], request.form['cognome'],'leader', request.form['email'], request.form['data'],request.form['indirizzo'], request.form['telefono'], request.form['cellulare']
+        database.commit()
+        database.close()
+        updateSessionData('leader',rows)
+
+    elif request.method == 'POST' and 'form_elimina' in request.form:
+        database = sqlite3.connect(path)
+        cursor = database.cursor();
+        cursor.execute("DELETE FROM PERSONALE WHERE Matricola= ?;",[session['matricola']])
+        database.commit()
+        database.close()
+        return redirect(url_for("logout"))
+
     if 'leader' in session:
-        print(session)
         return render_template("homeLEADER.html", usernamesession=session['nome'] + " " + session
         ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
@@ -379,10 +402,9 @@ def loginerrato():
 
 @app.route('/logout', methods=['GET'])
 def logout():
-    for partecipante in ruolo_partecipanti:
-        if partecipante in session:
-            session.pop(partecipante)
-
+    keys = list(session.keys())
+    for key in keys:
+            session.pop(key)
     return redirect(url_for('root'))
 
 
