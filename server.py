@@ -9,15 +9,15 @@ path = 'database.db'
 database = sqlite3.connect(path)
 cursor = database.cursor();
 
-#definizione ruoli della popolazione di riferimento
-ruolo_partecipanti= ['leader', 'segretaria' ,'responsabile', 'esterno', 'animatore', 'bambino']
+# definizione ruoli della popolazione di riferimento
+ruolo_partecipanti = ['leader', 'segretaria', 'responsabile', 'esterno', 'animatore', 'bambino']
 
-#totale partecimanti
+# totale partecimanti
 totale_personale = 0;
-totale_bambini = 0 ;
+totale_bambini = 0;
 totale_animatori = 0;
 
-#inizializzazione del database
+# inizializzazione del database
 database.execute("CREATE TABLE IF NOT EXISTS PERSONALE("
                  "Matricola CHAR(5), "
                  "Password CHAR(5) NOT NULL, "
@@ -156,7 +156,7 @@ database.execute("CREATE TABLE IF NOT EXISTS ISCRIZIONE("
                  "FOREIGN KEY (TipoEvento,Luogo,Data,Ora)"
                  "REFERENCES EVENTO(TipoEvento,Lugo,Data,Ora));")
 
-#inserisco il leader se non già inserito
+# inserisco il leader se non già inserito
 try:
     cursor.execute(
         "INSERT INTO PERSONALE VALUES ('00001','admin','Pinco','Pallino','admin@gmail.com','1/1/00','via bella n.5',03598456,340586969,'leader');")
@@ -166,8 +166,7 @@ except:
 
 database.commit()
 
-
-#calcolo numero partecipanti
+# calcolo numero partecipanti
 cursor.execute("SELECT count(*)  FROM PERSONALE")
 rows = cursor.fetchone()
 totale_personale += int(str(rows[0]))
@@ -181,6 +180,15 @@ rows = cursor.fetchone()
 totale_bambini += int(str(rows[0]))
 
 database.close()
+
+from enum import Enum
+
+
+class Color(Enum):
+    RED = 1
+    GREEN = 2
+    BLUE = 3
+
 
 @app.route('/')
 def root():
@@ -220,7 +228,7 @@ def login():
             rows = cursor.fetchall()
 
             if len(rows) != 0:
-                rows = rows[0][0],rows[0][1],'bambino'
+                rows = rows[0][0], rows[0][1], 'bambino'
 
             else:
                 cursor.execute("SELECT Matricola, Password  FROM ANIMATORE WHERE Matricola = ? AND Password = ?",
@@ -228,7 +236,7 @@ def login():
                 rows = cursor.fetchall()
 
                 if len(rows) != 0:
-                    rows = rows[0][0],rows[0][1],'animatore'
+                    rows = rows[0][0], rows[0][1], 'animatore'
                     print(rows)
                 else:
                     database.close()
@@ -259,12 +267,14 @@ def home_segretaria():
     else:
         return redirect(url_for('login'))
 
+
 @app.route('/homeRESPONSABILE', methods=['GET'])
 def home_responsabile():
     if 'responsabile' in session:
         return render_template("homeRESPONSABILE.html")
     else:
         return redirect(url_for('login'))
+
 
 @app.route('/homeESTERNO', methods=['GET'])
 def home_esterno():
@@ -273,12 +283,14 @@ def home_esterno():
     else:
         return redirect(url_for('login'))
 
+
 @app.route('/homeANIMATORE', methods=['GET'])
 def home_animatore():
     if 'animatore' in session:
         return render_template("homeANIMATORE.html")
     else:
         return redirect(url_for('login'))
+
 
 @app.route('/homeBAMBINO', methods=['GET'])
 def home_bambino():
@@ -287,9 +299,11 @@ def home_bambino():
     else:
         return redirect(url_for('login'))
 
+
 @app.route('/loginerrato', methods=['GET'])
 def loginerrato():
     return render_template('loginerrato.html')
+
 
 @app.route('/logout', methods=['GET'])
 def logout():
@@ -299,10 +313,36 @@ def logout():
 
     return redirect(url_for('root'))
 
+
 @app.route('/formInserisciSegretaria')
 def form_inserisci_segretaria():
     if 'leader' in session:
-        return render_template("formInserisciSegretaria.html", matricola = str(totale_personale + totale_bambini + totale_animatori).zfill(5))
+        return render_template("formInserisciSegretaria.html",
+                               matricola=str(totale_personale + totale_bambini + totale_animatori).zfill(5))
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/formCreaGita')
+def form_crea_gita():
+    if 'leader' in session:
+        return render_template("formCreaGita.html")
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/formCreaGioco')
+def form_crea_gioco():
+    if 'leader' in session:
+        return render_template("formCreaGioco.html")
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/formCreaLaboratorio')
+def form_crea_laboratorio():
+    if 'leader' in session:
+        return render_template("formCreaLaboratorio.html")
     else:
         return redirect(url_for('login'))
 
