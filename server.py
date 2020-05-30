@@ -87,7 +87,7 @@ database.execute("CREATE TABLE IF NOT EXISTS EVENTO("
                  "Data DATE,"
                  "Ora TIME,"
                  "Descrizione VARCHAR(50) NOT NULL,"
-                 "Punteggio INTEGER NOT NULL,"
+                 "Punteggio INTEGER,"
                  "MatrLeader CHAR(5) NOT NULL, "
                  "PRIMARY KEY (TipoEvento,Luogo,Data,Ora),"
                  "FOREIGN KEY (MatrLeader) "
@@ -159,7 +159,7 @@ database.execute("CREATE TABLE IF NOT EXISTS ISCRIZIONE("
 # inserisco il leader se non già inserito
 try:
     cursor.execute(
-        "INSERT INTO PERSONALE VALUES ('00001','admin','Pinco','Pallino','admin@gmail.com','1/1/00','via bella n.5',03598456,340586969,'leader');")
+        "INSERT INTO PERSONALE VALUES ('00001','admin','Pinco','Pallino','admin@gmail.com','0000-1-1','via bella n.5',03598456,340586969,'leader');")
     cursor.fetchall()
 except:
     pass
@@ -180,14 +180,6 @@ rows = cursor.fetchone()
 totale_bambini += int(str(rows[0]))
 
 database.close()
-
-from enum import Enum
-
-
-class Color(Enum):
-    RED = 1
-    GREEN = 2
-    BLUE = 3
 
 
 @app.route('/')
@@ -314,11 +306,34 @@ def logout():
     return redirect(url_for('root'))
 
 
-@app.route('/formInserisciSegretaria')
+@app.route('/formInserisciSegretaria', methods=['GET', 'POST'])
 def form_inserisci_segretaria():
+    if request.method == 'POST':
+        matricola = request.form['matricola']
+        password = request.form['password']
+        nome = request.form['nome']
+        cognome = request.form['cognome']
+        email = request.form['email']
+        data = request.form['data']
+        indirizzo = request.form['indirizzo']
+        telefono = request.form['telefono']
+        cellulare = request.form['cellulare']
+
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+        cursor.execute(
+            "INSERT INTO PERSONALE VALUES (?,?,?,?,?,?,?,?,?,?);",
+                [matricola,password,nome,cognome,email,data,indirizzo,telefono,cellulare,'segretaria'])
+
+        cursor.fetchall()
+        database.commit()
+        database.close()
+
+        return redirect(url_for('form_inserisci_segretaria'))
+
     if 'leader' in session:
         return render_template("formInserisciSegretaria.html",
-                               matricola=str(totale_personale + totale_bambini + totale_animatori).zfill(5))
+                               matricola=str(totale_personale + totale_bambini + totale_animatori + 1).zfill(5))
     else:
         return redirect(url_for('login'))
 
