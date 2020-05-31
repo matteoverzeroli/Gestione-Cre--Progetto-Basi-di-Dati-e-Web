@@ -720,15 +720,15 @@ def form_inserisci_animatore():
         indirizzo = request.form['indirizzo']
         telefono = request.form['telefono']
         cellulare = request.form['cellulare']
-        matrResponsabile = request.form['matrResponsabile']
-        nomeSquadra = request.form['nomeSquadra']
+        matricolaresponsabile = request.form.get('matricolaresponsabile')
+        nomesquadra = request.form.get('nomesquadra')
 
         database = sqlite3.connect(path)
         cursor = database.cursor()
         cursor.execute(
-            "INSERT INTO PERSONALE ANIMATORE (?,?,?,?,?,?,?,?,?);",
-            [matricola, password, nome, cognome, email, data, indirizzo, telefono, cellulare, matrResponsabile,
-             nomeSquadra])
+            "INSERT INTO ANIMATORE VALUES (?,?,?,?,?,?,?,?,?,?,?);",
+            [matricola, password, nome, cognome, email, data, indirizzo, telefono, cellulare, matricolaresponsabile,
+             nomesquadra])
 
         cursor.fetchall()
         database.commit()
@@ -780,23 +780,23 @@ def form_inserisci_bambino():
         indirizzo = request.form['indirizzo']
         telefono = request.form['telefono']
         cellulare = request.form['cellulare']
-        nomPadre = request.form['nomPadre']
-        nomMadre = request.form['nomMadre']
-        nomeSquadra = request.form['nomeSquadra']
+        nominativopadre = request.form['nominativopadre']
+        nominativomadre = request.form['nominativomadre']
+        nomesquadra = request.form.get('nomesquadra')
 
         database = sqlite3.connect(path)
         cursor = database.cursor()
         cursor.execute(
-            "INSERT INTO PERSONALE BAMBINO (?,?,?,?,?,?,?,?,?,?,?,?);",
-            [matricola, password, nome, cognome, email, data, indirizzo, telefono, cellulare, nomMadre, nomPadre,
-             nomeSquadra])
+            "INSERT INTO BAMBINO VALUES (?,?,?,?,?,?,?,?,?,?,?,?);",
+            [matricola, password, nome, cognome, email, data, indirizzo, telefono, cellulare, nominativomadre, nominativopadre,
+             nomesquadra])
 
         cursor.fetchall()
         database.commit()
         database.close()
 
-        global totale_animatori
-        totale_animatori += 1
+        global totale_bambini
+        totale_bambini += 1
 
         global matricola_max
         matricola_max += 1
