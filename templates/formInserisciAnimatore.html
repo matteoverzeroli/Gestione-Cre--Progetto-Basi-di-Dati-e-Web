@@ -1,21 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Crea Gita</title>
-    <!--<link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/dashboard/">-->
+    <meta charset="utf-8">
 
-    <!-- Bootstrap core CSS -->
-    <!--<link href="/docs/4.5/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">-->
+    <title>Inserisci Responsabile</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/dashboard/">
 
     <!-- Favicons -->
-    <!--<link rel="apple-touch-icon" href="/docs/4.5/assets/img/favicons/apple-touch-icon.png" sizes="180x180">
-    <link rel="icon" href="/docs/4.5/assets/img/favicons/favicon-32x32.png" sizes="32x32" type="image/png">
-    <link rel="icon" href="/docs/4.5/assets/img/favicons/favicon-16x16.png" sizes="16x16" type="image/png"> -->
-    <!--<link rel="manifest" href="/docs/4.5/assets/img/favicons/manifest.json">-->
-    <link rel="mask-icon" href="/docs/4.5/assets/img/favicons/safari-pinned-tab.svg" color="#563d7c">
-    <link rel="icon" href="/docs/4.5/assets/img/favicons/favicon.ico">
+
     <meta name="msapplication-config" content="/docs/4.5/assets/img/favicons/browserconfig.xml">
     <meta name="theme-color" content="#563d7c">
 
@@ -101,7 +94,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/formInserisciAnimatore">
+                        <a class="nav-link active" href="#">
                             <span data-feather="file"></span>
                             Inserisci Animatore
                         </a>
@@ -119,7 +112,7 @@
                         </a>
                     </h6>
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">
+                        <a class="nav-link" href="/formCreaGita">
                             <span data-feather="shopping-cart"></span>
                             Crea Gita
                         </a>
@@ -145,7 +138,7 @@
                 <h1 class="h2">{{usernamesession}}</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group mr-2">
-                        <button type="button" class="btn btn-sm btn-outline-secondary">Totale Partecipanti:
+                       <button type="button" class="btn btn-sm btn-outline-secondary">Totale Partecipanti:
                             {{totalepartecipanti}}
                         </button>
                         <button type="button" class="btn btn-sm btn-outline-secondary">Totale Leader: {{totaleleader}}
@@ -166,47 +159,69 @@
                             {{totalebambini}}
                         </button>
                     </div>
-
                 </div>
             </div>
 
-            <h2>Crea Gita</h2>
-            <form method="post" id="segretariaForm">
+            <h2>Inserisci Animatore</h2>
+            <form method="post" id = "responsabileForm">
                 <div class="form-group">
-                    <label for="tipoGita">Seleziona Gita</label>
-                    <select class="form-control" name="tipoGita" id="tipoGita" required>
-                        <option selected value="">Scegli...</option>
-                        <option value="6">Gita in montagna</option>
-                        <option value="7">Gita al mare</option>
-                        <option value="8">Gita al lago</option>
-                        <option value="9">Gita culturale</option>
-                        <option value="10">Altra Gita</option>
-                    </select>
+                    <label for="matricola">Matricola</label>
+                    <input type="text" class="form-control" name="matricola" id="matricola" value="{{matricola}}">
                 </div>
                 <div class="form-group">
-                    <label for="luogo">Luogo</label>
-                    <input type="text" class="form-control" name="luogo" id="luogo" placeholder="Palestra di via PincoPallo" required
-                           maxlength="50">
+                    <label for="password">Password</label>
+                    <input type="password" name = 'password' class="form-control" id="password" placeholder="Password" value="{{password}}" required pattern="[a-zA-z0-9]{5}">
+                </div>
+                <div class="form-group">
+                    <label for="nome">Nome</label>
+                    <input type="text" name="nome" class="form-control" id="nome" placeholder="Nome" required maxlength="50" >
+                </div>
+                <div class="form-group">
+                    <label for="cognome">Cognome</label>
+                    <input type="text" name="cognome" class="form-control" id="cognome" placeholder="Cognome" required maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label for="email">E-Mail</label>
+                    <input type="email" name="email" class="form-control" id="email" placeholder="email@admin.com" required maxlength="50">
                 </div>
                 <div class="it-datepicker-wrapper">
                     <div class="form-group">
-                        <label for="date">Data</label>
-                        <input class="form-control it-date-datepicker" name="date" id="date" type="date" placeholder="gg/mm/aaaa"
-                               required>
-                    </div>
-                </div>
-                <div class="it-timepicker-wrapper">
-                    <div class="form-group">
-                        <label for="time">Data</label>
-                        <input class="form-control it-time-datepicker" name="time" id="time" type="time" required>
+                        <label for="date">Data di nascita</label>
+                        <input class="form-control it-date-datepicker" name="data" id="date" type="date" placeholder="gg/mm/aaaa" required >
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="descrizione">Descrizione</label>
-                    <textarea class="form-control" name="descrizione" id="descrizione" rows="3" required maxlength="50"></textarea>
+                    <label for="indirizzo">Indirizzo</label>
+                    <input type="text" name="indirizzo" class="form-control" id="indirizzo" placeholder="Topolandia, Via dei Paperon, 12" required maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label for="telefono">Numero di telefono</label>
+                    <input type="number" name="telefono" class="form-control" id="telefono" placeholder="035303030">
+                </div>
+                <div class="form-group">
+                    <label for="cellulare">Numero di cellulare</label>
+                    <input type="number" name="cellulare" class="form-control" id="cellulare" placeholder="3334445566">
+                </div>
+                  <div class="form-group">
+                    <label for="matrResp">Seleziona Responsabile</label>
+                    <select class="form-control" name="matrResp" id="matrResp" required>
+                        <option selected value="">Scegli...</option>
+                        {% for matr in matricole%}
+                            <option>{{ matr[0] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="squadra">Seleziona Squadra</label>
+                    <select class="form-control" name="nomesquadra" id="squadra" required>
+                        <option selected value="">Scegli...</option>
+                        {% for nome in listsquadra%}
+                            <option>{{ nome[0] }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 <div class="float-right">
-                    <input type="submit" class="btn btn-primary btn-lg mb-1" value="Crea Gita">
+                    <input type="submit" class="btn btn-primary btn-lg mb-1" value="Inserisci Animatore">
                 </div>
             </form>
         </main>
@@ -217,8 +232,5 @@
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
         crossorigin="anonymous"></script>
 <script>window.jQuery || document.write('<script src="../assets/js/vendor/jquery.slim.min.js"><\/script>')</script>
-<!--<script src="../assets/dist/js/bootstrap.bundle.js"></script>-->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.9.0/feather.min.js"></script>
-<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>-->
 </body>
 </html>

@@ -1,6 +1,7 @@
-from flask import Flask, request, render_template, redirect, url_for, session
 import os
 import sqlite3
+
+from flask import Flask, request, render_template, redirect, url_for, session, flash
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -230,7 +231,7 @@ database.close()
 
 
 # funzione per aggiornare dati inseriti nella session
-def updateSessionData(partecipante,rows):
+def updateSessionData(partecipante, rows):
     session[partecipante] = rows[0]
     session['matricola'] = rows[0]
     session['password'] = rows[1]
@@ -312,7 +313,7 @@ def login():
 
         for partecipante in ruolo_partecipanti:
             if rows[4] == partecipante:
-                updateSessionData(partecipante,rows)
+                updateSessionData(partecipante, rows)
                 return redirect(url_for('root'))
 
     return render_template('login.html')
@@ -325,17 +326,20 @@ def home_leader():
         cursor = database.cursor();
         cursor.execute(
             "UPDATE PERSONALE SET Password = ?, Nome = ?, Cognome = ?, Email = ?, DataNascita = ?, Indirizzo = ?, NumTelefono = ?, NumCellulare = ? WHERE Matricola = ?;",
-            [request.form['password'],request.form['nome'], request.form['cognome'], request.form['email'], request.form['data'],
+            [request.form['password'], request.form['nome'], request.form['cognome'], request.form['email'],
+             request.form['data'],
              request.form['indirizzo'], request.form['telefono'], request.form['cellulare'], request.form['matricola']])
-        rows= request.form['matricola'],request.form['password'],request.form['nome'], request.form['cognome'],'leader', request.form['email'], request.form['data'],request.form['indirizzo'], request.form['telefono'], request.form['cellulare']
+        rows = request.form['matricola'], request.form['password'], request.form['nome'], request.form[
+            'cognome'], 'leader', request.form['email'], request.form['data'], request.form['indirizzo'], request.form[
+                   'telefono'], request.form['cellulare']
         database.commit()
         database.close()
-        updateSessionData('leader',rows)
+        updateSessionData('leader', rows)
 
     elif request.method == 'POST' and 'form_elimina' in request.form:
         database = sqlite3.connect(path)
         cursor = database.cursor();
-        cursor.execute("DELETE FROM PERSONALE WHERE Matricola= ?;",[session['matricola']])
+        cursor.execute("DELETE FROM PERSONALE WHERE Matricola= ?;", [session['matricola']])
         database.commit()
         database.close()
         return redirect(url_for("logout"))
@@ -355,42 +359,202 @@ def home_leader():
         return redirect(url_for('login'))
 
 
-@app.route('/homeSEGRETARIA', methods=['GET'])
+@app.route('/homeSEGRETARIA', methods=['GET', 'POST'])
 def home_segretaria():
+    if request.method == 'POST' and 'form_modifica' in request.form:
+        database = sqlite3.connect(path)
+        cursor = database.cursor();
+        cursor.execute(
+            "UPDATE PERSONALE SET Password = ?, Nome = ?, Cognome = ?, Email = ?, DataNascita = ?, Indirizzo = ?, NumTelefono = ?, NumCellulare = ? WHERE Matricola = ?;",
+            [request.form['password'], request.form['nome'], request.form['cognome'], request.form['email'],
+             request.form['data'],
+             request.form['indirizzo'], request.form['telefono'], request.form['cellulare'], request.form['matricola']])
+        rows = request.form['matricola'], request.form['password'], request.form['nome'], request.form[
+            'cognome'], 'leader', request.form['email'], request.form['data'], request.form['indirizzo'], request.form[
+                   'telefono'], request.form['cellulare']
+        database.commit()
+        database.close()
+        updateSessionData('leader', rows)
+
+    elif request.method == 'POST' and 'form_elimina' in request.form:
+        database = sqlite3.connect(path)
+        cursor = database.cursor();
+        cursor.execute("DELETE FROM PERSONALE WHERE Matricola= ?;", [session['matricola']])
+        database.commit()
+        database.close()
+        return redirect(url_for("logout"))
+
     if 'segretaria' in session:
-        return render_template("homeSEGRETARIA.html")
+        return render_template("homeSEGRETARIA.html", usernamesession=session['nome'] + " " + session
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                               cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
+                               indirizzo=session['indirizzo'],
+                               telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader, totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini)
     else:
         return redirect(url_for('login'))
 
 
-@app.route('/homeRESPONSABILE', methods=['GET'])
+@app.route('/homeRESPONSABILE', methods=['GET', 'POST'])
 def home_responsabile():
+    if request.method == 'POST' and 'form_modifica' in request.form:
+        database = sqlite3.connect(path)
+        cursor = database.cursor();
+        cursor.execute(
+            "UPDATE PERSONALE SET Password = ?, Nome = ?, Cognome = ?, Email = ?, DataNascita = ?, Indirizzo = ?, NumTelefono = ?, NumCellulare = ? WHERE Matricola = ?;",
+            [request.form['password'], request.form['nome'], request.form['cognome'], request.form['email'],
+             request.form['data'],
+             request.form['indirizzo'], request.form['telefono'], request.form['cellulare'], request.form['matricola']])
+        rows = request.form['matricola'], request.form['password'], request.form['nome'], request.form[
+            'cognome'], 'leader', request.form['email'], request.form['data'], request.form['indirizzo'], request.form[
+                   'telefono'], request.form['cellulare']
+        database.commit()
+        database.close()
+        updateSessionData('leader', rows)
+
+    elif request.method == 'POST' and 'form_elimina' in request.form:
+        database = sqlite3.connect(path)
+        cursor = database.cursor();
+        cursor.execute("DELETE FROM PERSONALE WHERE Matricola= ?;", [session['matricola']])
+        database.commit()
+        database.close()
+        return redirect(url_for("logout"))
+
     if 'responsabile' in session:
-        return render_template("homeRESPONSABILE.html")
+        return render_template("homeRESPONSABILE.html", usernamesession=session['nome'] + " " + session
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                               cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
+                               indirizzo=session['indirizzo'],
+                               telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader, totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini)
     else:
         return redirect(url_for('login'))
 
 
-@app.route('/homeESTERNO', methods=['GET'])
+@app.route('/homeESTERNO', methods=['GET', 'POST'])
 def home_esterno():
+    if request.method == 'POST' and 'form_modifica' in request.form:
+        database = sqlite3.connect(path)
+        cursor = database.cursor();
+        cursor.execute(
+            "UPDATE PERSONALE SET Password = ?, Nome = ?, Cognome = ?, Email = ?, DataNascita = ?, Indirizzo = ?, NumTelefono = ?, NumCellulare = ? WHERE Matricola = ?;",
+            [request.form['password'], request.form['nome'], request.form['cognome'], request.form['email'],
+             request.form['data'],
+             request.form['indirizzo'], request.form['telefono'], request.form['cellulare'], request.form['matricola']])
+        rows = request.form['matricola'], request.form['password'], request.form['nome'], request.form[
+            'cognome'], 'leader', request.form['email'], request.form['data'], request.form['indirizzo'], request.form[
+                   'telefono'], request.form['cellulare']
+        database.commit()
+        database.close()
+        updateSessionData('leader', rows)
+
+    elif request.method == 'POST' and 'form_elimina' in request.form:
+        database = sqlite3.connect(path)
+        cursor = database.cursor();
+        cursor.execute("DELETE FROM PERSONALE WHERE Matricola= ?;", [session['matricola']])
+        database.commit()
+        database.close()
+        return redirect(url_for("logout"))
+
     if 'esterno' in session:
-        return render_template("homeESTERNO.html")
+        return render_template("homeESTERNO.html", usernamesession=session['nome'] + " " + session
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                               cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
+                               indirizzo=session['indirizzo'],
+                               telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader, totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini)
     else:
         return redirect(url_for('login'))
 
 
 @app.route('/homeANIMATORE', methods=['GET'])
 def home_animatore():
+    if request.method == 'POST' and 'form_modifica' in request.form:
+        database = sqlite3.connect(path)
+        cursor = database.cursor();
+        cursor.execute(
+            "UPDATE PERSONALE SET Password = ?, Nome = ?, Cognome = ?, Email = ?, DataNascita = ?, Indirizzo = ?, NumTelefono = ?, NumCellulare = ? WHERE Matricola = ?;",
+            [request.form['password'], request.form['nome'], request.form['cognome'], request.form['email'],
+             request.form['data'],
+             request.form['indirizzo'], request.form['telefono'], request.form['cellulare'], request.form['matricola']])
+        rows = request.form['matricola'], request.form['password'], request.form['nome'], request.form[
+            'cognome'], 'leader', request.form['email'], request.form['data'], request.form['indirizzo'], request.form[
+                   'telefono'], request.form['cellulare']
+        database.commit()
+        database.close()
+        updateSessionData('leader', rows)
+
+    elif request.method == 'POST' and 'form_elimina' in request.form:
+        database = sqlite3.connect(path)
+        cursor = database.cursor();
+        cursor.execute("DELETE FROM PERSONALE WHERE Matricola= ?;", [session['matricola']])
+        database.commit()
+        database.close()
+        return redirect(url_for("logout"))
+
     if 'animatore' in session:
-        return render_template("homeANIMATORE.html")
+        return render_template("homeANIMATORE.html", usernamesession=session['nome'] + " " + session
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                               cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
+                               indirizzo=session['indirizzo'],
+                               telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader, totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini)
     else:
         return redirect(url_for('login'))
 
 
 @app.route('/homeBAMBINO', methods=['GET'])
 def home_bambino():
+    if request.method == 'POST' and 'form_modifica' in request.form:
+        database = sqlite3.connect(path)
+        cursor = database.cursor();
+        cursor.execute(
+            "UPDATE PERSONALE SET Password = ?, Nome = ?, Cognome = ?, Email = ?, DataNascita = ?, Indirizzo = ?, NumTelefono = ?, NumCellulare = ? WHERE Matricola = ?;",
+            [request.form['password'], request.form['nome'], request.form['cognome'], request.form['email'],
+             request.form['data'],
+             request.form['indirizzo'], request.form['telefono'], request.form['cellulare'], request.form['matricola']])
+        rows = request.form['matricola'], request.form['password'], request.form['nome'], request.form[
+            'cognome'], 'leader', request.form['email'], request.form['data'], request.form['indirizzo'], request.form[
+                   'telefono'], request.form['cellulare']
+        database.commit()
+        database.close()
+        updateSessionData('leader', rows)
+
+    elif request.method == 'POST' and 'form_elimina' in request.form:
+        database = sqlite3.connect(path)
+        cursor = database.cursor();
+        cursor.execute("DELETE FROM PERSONALE WHERE Matricola= ?;", [session['matricola']])
+        database.commit()
+        database.close()
+        return redirect(url_for("logout"))
+
     if 'bambino' in session:
-        return render_template("homeBAMBINO.html")
+        return render_template("homeBAMBINO.html", usernamesession=session['nome'] + " " + session
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                               cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
+                               indirizzo=session['indirizzo'],
+                               telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader, totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini)
     else:
         return redirect(url_for('login'))
 
@@ -404,7 +568,7 @@ def loginerrato():
 def logout():
     keys = list(session.keys())
     for key in keys:
-            session.pop(key)
+        session.pop(key)
     return redirect(url_for('root'))
 
 
@@ -444,7 +608,7 @@ def form_inserisci_segretaria():
                                matricola=str((matricola_max + 1)).zfill(5),
                                usernamesession=session['nome'] + " " + session
                                ['cognome'], totalepartecipanti=(
-                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader, totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
                                totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
@@ -452,11 +616,227 @@ def form_inserisci_segretaria():
     else:
         return redirect(url_for('login'))
 
+@app.route('/formInserisciResponsabile', methods=['GET', 'POST'])
+def form_inserisci_responsabile():
+    if request.method == 'POST':
+        matricola = request.form['matricola']
+        password = request.form['password']
+        nome = request.form['nome']
+        cognome = request.form['cognome']
+        email = request.form['email']
+        data = request.form['data']
+        indirizzo = request.form['indirizzo']
+        telefono = request.form['telefono']
+        cellulare = request.form['cellulare']
+
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+        cursor.execute(
+            "INSERT INTO PERSONALE VALUES (?,?,?,?,?,?,?,?,?,?);",
+            [matricola, password, nome, cognome, email, data, indirizzo, telefono, cellulare, 'responsabile'])
+
+        cursor.fetchall()
+        database.commit()
+        database.close()
+
+        global totale_responsabili
+        totale_responsabili += 1
+
+        global matricola_max
+        matricola_max += 1
+
+        return redirect(url_for('form_inserisci_responsabile'))
+
+    if 'leader' in session:
+        return render_template("formInserisciResponsabile.html",
+                               matricola=str((matricola_max + 1)).zfill(5),
+                               usernamesession=session['nome'] + " " + session
+                               ['cognome'], totalepartecipanti=(
+                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader, totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini)
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/formInserisciEsterno', methods=['GET', 'POST'])
+def form_inserisci_esterno():
+    if request.method == 'POST':
+        matricola = request.form['matricola']
+        password = request.form['password']
+        nome = request.form['nome']
+        cognome = request.form['cognome']
+        email = request.form['email']
+        data = request.form['data']
+        indirizzo = request.form['indirizzo']
+        telefono = request.form['telefono']
+        cellulare = request.form['cellulare']
+
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+        cursor.execute(
+            "INSERT INTO PERSONALE VALUES (?,?,?,?,?,?,?,?,?,?);",
+            [matricola, password, nome, cognome, email, data, indirizzo, telefono, cellulare, 'esterno'])
+
+        cursor.fetchall()
+        database.commit()
+        database.close()
+
+        global totale_esterni
+        totale_esterni += 1
+
+        global matricola_max
+        matricola_max += 1
+
+        return redirect(url_for('form_inserisci_esterno'))
+
+    if 'leader' in session:
+        return render_template("formInserisciEsterno.html",
+                               matricola=str((matricola_max + 1)).zfill(5),
+                               usernamesession=session['nome'] + " " + session
+                               ['cognome'], totalepartecipanti=(
+                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader, totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini)
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/formInserisciAnimatore', methods=['GET', 'POST'])
+def form_inserisci_animatore():
+    if request.method == 'POST':
+        matricola = request.form['matricola']
+        password = request.form['password']
+        nome = request.form['nome']
+        cognome = request.form['cognome']
+        email = request.form['email']
+        data = request.form['data']
+        indirizzo = request.form['indirizzo']
+        telefono = request.form['telefono']
+        cellulare = request.form['cellulare']
+        matrResponsabile = request.form['matrResponsabile']
+        nomeSquadra = request.form['nomeSquadra']
+
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+        cursor.execute(
+            "INSERT INTO PERSONALE ANIMATORE (?,?,?,?,?,?,?,?,?);",
+            [matricola, password, nome, cognome, email, data, indirizzo, telefono, cellulare, matrResponsabile, nomeSquadra])
+
+        cursor.fetchall()
+        database.commit()
+        database.close()
+
+        global totale_animatori
+        totale_animatori += 1
+
+        global matricola_max
+        matricola_max += 1
+
+        return redirect(url_for('form_inserisci_animatore'))
+
+    if 'leader' in session:
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+        cursor.execute("SELECT Nome  FROM SQUADRA")
+        squadre = cursor.fetchall()
+
+        cursor.execute("SELECT Matricola FROM PERSONALE WHERE Ruolo = 'responsabile'")
+        matricole = cursor.fetchall()
+        database.close()
+        return render_template("formInserisciAnimatore.html",
+                               matricola=str((matricola_max + 1)).zfill(5),
+                               usernamesession=session['nome'] + " " + session['cognome'],
+                               totalepartecipanti=( totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader,
+                               totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini,
+                               matricole=matricole,
+                               listsquadra=squadre)
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/formInserisciBambino', methods=['GET', 'POST'])
+def form_inserisci_bambino():
+    if request.method == 'POST':
+        matricola = request.form['matricola']
+        password = request.form['password']
+        nome = request.form['nome']
+        cognome = request.form['cognome']
+        email = request.form['email']
+        data = request.form['data']
+        indirizzo = request.form['indirizzo']
+        telefono = request.form['telefono']
+        cellulare = request.form['cellulare']
+        nomPadre = request.form['nomPadre']
+        nomMadre = request.form['nomMadre']
+        nomeSquadra = request.form['nomeSquadra']
+
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+        cursor.execute(
+            "INSERT INTO PERSONALE BAMBINO (?,?,?,?,?,?,?,?,?,?,?,?);",
+            [matricola, password, nome, cognome, email, data, indirizzo, telefono, cellulare, nomMadre, nomPadre, nomeSquadra])
+
+        cursor.fetchall()
+        database.commit()
+        database.close()
+
+        global totale_animatori
+        totale_animatori += 1
+
+        global matricola_max
+        matricola_max += 1
+
+        return redirect(url_for('form_inserisci_bambino'))
+
+    if 'leader' in session:
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+        cursor.execute("SELECT Nome  FROM SQUADRA")
+        squadre = cursor.fetchall()
+        database.close()
+        return render_template("formInserisciBambino.html",
+                               matricola=str((matricola_max + 1)).zfill(5),
+                               usernamesession=session['nome'] + " " + session['cognome'],
+                               totalepartecipanti=( totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader,
+                               totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini,
+                               listsquadra=squadre)
+    else:
+        return redirect(url_for('login'))
 
 @app.route('/formCreaGita', methods=['GET', 'POST'])
 def form_crea_gita():
     if request.method == 'POST':
         tipoGita = request.form['tipoGita']
+        luogo = request.form['luogo']
+        date = request.form['date']
+        time = request.form['time']
+        descrizione = request.form['descrizione']
+
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+        # inserisco il leader se non già inserito
+        try:
+            cursor.execute(
+                "INSERT INTO EVENTO VALUES (?,?,?,?,?,?,?);",
+                [tipoGita, luogo, date, time, descrizione, 'NULL', session['matricola']])
+            cursor.fetchall()
+        except:
+            flash("Attenzione")
+        finally:
+            database.commit()
+            database.close()
 
     if 'leader' in session:
         return render_template("formCreaGita.html", usernamesession=session['nome'] + " " + session
@@ -470,8 +850,30 @@ def form_crea_gita():
         return redirect(url_for('login'))
 
 
-@app.route('/formCreaGioco')
+@app.route('/formCreaGioco', methods=['GET', 'POST'])
 def form_crea_gioco():
+    if request.method == 'POST':
+        tipoGioco = request.form['tipoGioco']
+        luogo = request.form['luogo']
+        date = request.form['date']
+        time = request.form['time']
+        descrizione = request.form['descrizione']
+        punteggio = request.form['punteggio']
+
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+
+        try:
+            cursor.execute(
+                "INSERT INTO EVENTO VALUES (?,?,?,?,?,?,?);",
+                [tipoGioco, luogo, date, time, descrizione, punteggio, session['matricola']])
+
+            cursor.fetchall()
+        except:
+            flash("Attenzione")
+        finally:
+            database.commit()
+            database.close()
 
     if 'leader' in session:
         return render_template("formCreaGioco.html", usernamesession=session['nome'] + " " + session
@@ -485,8 +887,30 @@ def form_crea_gioco():
         return redirect(url_for('login'))
 
 
-@app.route('/formCreaLaboratorio')
+@app.route('/formCreaLaboratorio', methods=['GET', 'POST'])
 def form_crea_laboratorio():
+    if request.method == 'POST':
+        tipoLab = request.form['tipoLab']
+        luogo = request.form['luogo']
+        date = request.form['date']
+        time = request.form['time']
+        descrizione = request.form['descrizione']
+        punteggio = request.form['punteggio']
+
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+        try:
+            cursor.execute(
+                "INSERT INTO EVENTO VALUES (?,?,?,?,?,?,?);",
+                [tipoLab, luogo, date, time, descrizione, punteggio, session['matricola']])
+
+            cursor.fetchall()
+        except:
+            flash("Attenzione")
+        finally:
+            database.commit()
+            database.close()
+
     if 'leader' in session:
         return render_template("formCreaLaboratorio.html", usernamesession=session['nome'] + " " + session
         ['cognome'], totalepartecipanti=(
@@ -499,4 +923,4 @@ def form_crea_laboratorio():
         return redirect(url_for('login'))
 
 
-app.run(host="127.0.0.1", port=5000)
+app.run(host="127.0.0.1", port=5000, debug='true')
