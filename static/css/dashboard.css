@@ -102,6 +102,10 @@ body {
   box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
 }
 
+.flashes{
+  color: red;
+  font-size: x-large;
+}
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {

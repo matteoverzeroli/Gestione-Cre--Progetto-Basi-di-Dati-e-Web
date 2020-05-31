@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Crea Laboratorio</title>
+    <title>Crea Gioco</title>
     <link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/dashboard/">
 
     <!-- Bootstrap core CSS -->
@@ -44,6 +44,7 @@
 
 </head>
 <body>
+
 <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
     <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="/homeLEADER">Cre Grest</a>
     <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse"
@@ -65,7 +66,7 @@
                 <ul class="nav flex-column">
                     <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
                         <span>Menù</span>
-                        <a class="d-flex align-items-center text-muted" href="#" aria-label="Add a new report">
+                        <a class="d-flex align-items-center text-muted" href="#" aria-label="Menù">
                             <span data-feather="plus-circle"></span>
                         </a>
                     </h6>
@@ -119,11 +120,12 @@
                         </a>
                     </h6>
                     <li class="nav-item">
-                        <a class="nav-link" href="/formCreaSquadra">
-                            <span data-feather="shopping-cart"></span>
+                        <a class="nav-link active" href="/formCreaSquadra">
+                            <span data-feather="users"></span>
                             Crea Squadra
                         </a>
                     </li>
+
                     <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
                         <span>Crea Eventi</span>
                         <a class="d-flex align-items-center text-muted" href="#" aria-label="Crea un nuovo evento">
@@ -143,7 +145,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">
+                        <a class="nav-link" href="/formCreaLaboratorio">
                             <span data-feather="bar-chart-2"></span>
                             Crea Laboratorio
                         </a>
@@ -178,14 +180,13 @@
                             {{totalebambini}}
                         </button>
                     </div>
-
                 </div>
             </div>
 
-            <h2>Crea Laboratorio</h2>
-            <form method="post" id="segretariaForm">
-                <div class="form-group">
+            <h2>Crea Squadra</h2>
+            <form method="post" id="creaSquadraForm">
 
+                <div class="form-group">
                     {% with messages = get_flashed_messages() %}
                     {% if messages %}
                     <ul class=flashes>
@@ -196,45 +197,27 @@
                     {% endif %}
                     {% endwith %}
 
-                    <label for="tipoLab">Seleziona Gioco</label>
-                    <select class="form-control" name="tipoLab" id="tipoLab" required>
-                        <option selected value="">Scegli...</option>
-                        <option value="1">Cucina</option>
-                        <option value="2">Pittura</option>
-                        <option value="3">Circo</option>
-                        <option value="4">Compiti</option>
-                        <option value="5">Altro Laboratorio</option>
-                    </select>
+
+                    <label for="nomesquadra">Nome Squadra</label>
+                    <input type="text" name="nomesquadra" class="form-control" id="nomesquadra"
+                           placeholder="Nome squadra" required
+                           maxlength="10">
                 </div>
                 <div class="form-group">
-                    <label for="luogo">Luogo</label>
-                    <input type="text" class="form-control" name="luogo" id="luogo"
-                           placeholder="Palestra di via PincoPallo" required
+                    <label for="coloresquadra">Colore</label>
+                    <input type="text" name="coloresquadra" class="form-control" id="coloresquadra"
+                           placeholder="Colore" required
+                           maxlength="10">
+                </div>
+                <div class="form-group">
+                    <label for="mottosquadra">Motto</label>
+                    <input type="text" name="mottosquadra" class="form-control" id="mottosquadra"
+                           placeholder="Motto" required
                            maxlength="50">
                 </div>
-                <div class="it-datepicker-wrapper">
-                    <div class="form-group">
-                        <label for="date">Data</label>
-                        <input class="form-control it-date-datepicker" name="date" id="date" type="date"
-                               placeholder="gg/mm/aaaa"
-                               required>
-                    </div>
-                </div>
-                <div class="it-timepicker-wrapper">
-                    <div class="form-group">
-                        <label for="time">Data</label>
-                        <input class="form-control it-time-datepicker" name="time" id="time" type="time"
-                               placeholder="hh/mm"
-                               required>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="descrizione">Descrizione</label>
-                    <textarea class="form-control" name="descrizione" id="descrizione" rows="3" required
-                              maxlength="50"></textarea>
-                </div>
+
                 <div class="float-right">
-                    <input type="submit" class="btn btn-primary btn-lg mb-1" value="Crea Laboratorio">
+                    <input type="submit" class="btn btn-primary btn-lg mb-1" value="Crea Squadra">
                 </div>
             </form>
         </main>

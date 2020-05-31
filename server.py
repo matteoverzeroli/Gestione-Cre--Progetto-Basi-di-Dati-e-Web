@@ -36,7 +36,7 @@ database.execute("CREATE TABLE IF NOT EXISTS PERSONALE("
                  "NumTelefono INTEGER NOT NULL, "
                  "NumCellulare INTEGER, "
                  "Ruolo VARCHAR(12) NOT NULL, "
-                 "PRIMARY KEY (Matricola));")
+                 "PRIMARY KEY (Matricola)) ;")
 
 database.execute("CREATE TABLE IF NOT EXISTS ANIMATORE("
                  "Matricola CHAR(5), "
@@ -95,10 +95,11 @@ database.execute("CREATE TABLE IF NOT EXISTS EVENTO("
                  "Ora TIME,"
                  "Descrizione VARCHAR(50) NOT NULL,"
                  "Punteggio INTEGER,"
-                 "MatrLeader CHAR(5) NOT NULL, "
+                 "MatrLeader CHAR(5) NOT NULL DEFAULT '00001', "
                  "PRIMARY KEY (TipoEvento,Luogo,Data,Ora),"
                  "FOREIGN KEY (MatrLeader) "
-                 "REFERENCES PERSONALE(Matricola));")
+                 "REFERENCES PERSONALE(Matricola)"
+                 "ON DELETE SET DEFAULT );")
 
 database.execute("CREATE TABLE IF NOT EXISTS SQUADRA("
                  "Nome VARCHAR(10),"
@@ -608,13 +609,14 @@ def form_inserisci_segretaria():
                                matricola=str((matricola_max + 1)).zfill(5),
                                usernamesession=session['nome'] + " " + session
                                ['cognome'], totalepartecipanti=(
-                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader, totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
                                totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
                                totalebambini=totale_bambini)
     else:
         return redirect(url_for('login'))
+
 
 @app.route('/formInserisciResponsabile', methods=['GET', 'POST'])
 def form_inserisci_responsabile():
@@ -652,13 +654,14 @@ def form_inserisci_responsabile():
                                matricola=str((matricola_max + 1)).zfill(5),
                                usernamesession=session['nome'] + " " + session
                                ['cognome'], totalepartecipanti=(
-                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader, totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
                                totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
                                totalebambini=totale_bambini)
     else:
         return redirect(url_for('login'))
+
 
 @app.route('/formInserisciEsterno', methods=['GET', 'POST'])
 def form_inserisci_esterno():
@@ -696,13 +699,14 @@ def form_inserisci_esterno():
                                matricola=str((matricola_max + 1)).zfill(5),
                                usernamesession=session['nome'] + " " + session
                                ['cognome'], totalepartecipanti=(
-                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader, totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
                                totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
                                totalebambini=totale_bambini)
     else:
         return redirect(url_for('login'))
+
 
 @app.route('/formInserisciAnimatore', methods=['GET', 'POST'])
 def form_inserisci_animatore():
@@ -723,7 +727,8 @@ def form_inserisci_animatore():
         cursor = database.cursor()
         cursor.execute(
             "INSERT INTO PERSONALE ANIMATORE (?,?,?,?,?,?,?,?,?);",
-            [matricola, password, nome, cognome, email, data, indirizzo, telefono, cellulare, matrResponsabile, nomeSquadra])
+            [matricola, password, nome, cognome, email, data, indirizzo, telefono, cellulare, matrResponsabile,
+             nomeSquadra])
 
         cursor.fetchall()
         database.commit()
@@ -749,7 +754,8 @@ def form_inserisci_animatore():
         return render_template("formInserisciAnimatore.html",
                                matricola=str((matricola_max + 1)).zfill(5),
                                usernamesession=session['nome'] + " " + session['cognome'],
-                               totalepartecipanti=( totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totalepartecipanti=(
+                                       totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader,
                                totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
@@ -760,6 +766,7 @@ def form_inserisci_animatore():
                                listsquadra=squadre)
     else:
         return redirect(url_for('login'))
+
 
 @app.route('/formInserisciBambino', methods=['GET', 'POST'])
 def form_inserisci_bambino():
@@ -781,7 +788,8 @@ def form_inserisci_bambino():
         cursor = database.cursor()
         cursor.execute(
             "INSERT INTO PERSONALE BAMBINO (?,?,?,?,?,?,?,?,?,?,?,?);",
-            [matricola, password, nome, cognome, email, data, indirizzo, telefono, cellulare, nomMadre, nomPadre, nomeSquadra])
+            [matricola, password, nome, cognome, email, data, indirizzo, telefono, cellulare, nomMadre, nomPadre,
+             nomeSquadra])
 
         cursor.fetchall()
         database.commit()
@@ -804,7 +812,8 @@ def form_inserisci_bambino():
         return render_template("formInserisciBambino.html",
                                matricola=str((matricola_max + 1)).zfill(5),
                                usernamesession=session['nome'] + " " + session['cognome'],
-                               totalepartecipanti=( totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totalepartecipanti=(
+                                       totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader,
                                totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
@@ -814,6 +823,7 @@ def form_inserisci_bambino():
                                listsquadra=squadre)
     else:
         return redirect(url_for('login'))
+
 
 @app.route('/formCreaGita', methods=['GET', 'POST'])
 def form_crea_gita():
@@ -826,16 +836,17 @@ def form_crea_gita():
 
         database = sqlite3.connect(path)
         cursor = database.cursor()
-        # inserisco il leader se non già inserito
+
+        # inserisco evento se non già inserito
         try:
             cursor.execute(
                 "INSERT INTO EVENTO VALUES (?,?,?,?,?,?,?);",
                 [tipoGita, luogo, date, time, descrizione, 'NULL', session['matricola']])
             cursor.fetchall()
+            database.commit()
         except:
             flash("Attenzione")
         finally:
-            database.commit()
             database.close()
 
     if 'leader' in session:
@@ -863,16 +874,17 @@ def form_crea_gioco():
         database = sqlite3.connect(path)
         cursor = database.cursor()
 
+        # inserisco evento se non già inserito
         try:
             cursor.execute(
                 "INSERT INTO EVENTO VALUES (?,?,?,?,?,?,?);",
                 [tipoGioco, luogo, date, time, descrizione, punteggio, session['matricola']])
 
             cursor.fetchall()
-        except:
-            flash("Attenzione")
-        finally:
             database.commit()
+        except:
+           flash("Attenzione: gioco già inserito!")
+        finally:
             database.close()
 
     if 'leader' in session:
@@ -895,20 +907,20 @@ def form_crea_laboratorio():
         date = request.form['date']
         time = request.form['time']
         descrizione = request.form['descrizione']
-        punteggio = request.form['punteggio']
 
         database = sqlite3.connect(path)
         cursor = database.cursor()
+        # inserisco evento se non già presente
         try:
             cursor.execute(
                 "INSERT INTO EVENTO VALUES (?,?,?,?,?,?,?);",
-                [tipoLab, luogo, date, time, descrizione, punteggio, session['matricola']])
+                [tipoLab, luogo, date, time, descrizione, 'NULL', session['matricola']])
 
             cursor.fetchall()
-        except:
-            flash("Attenzione")
-        finally:
             database.commit()
+        except:
+            flash("Attenzione: laboratorio già inserito!")
+        finally:
             database.close()
 
     if 'leader' in session:
@@ -922,5 +934,38 @@ def form_crea_laboratorio():
     else:
         return redirect(url_for('login'))
 
+@app.route('/formCreaSquadra', methods=['GET','POST'])
+def form_crea_squadra():
+    if request.method == 'POST':
+        nomesquadra = request.form['nomesquadra']
+        coloresquadra = request.form['coloresquadra']
+        mottosquadra = request.form['mottosquadra']
 
-app.run(host="127.0.0.1", port=5000, debug='true')
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+
+        try:
+            cursor.execute(
+                "INSERT INTO SQUADRA(Nome,Colore,Motto) VALUES (?,?,?);",
+                [nomesquadra,coloresquadra,mottosquadra])
+
+            cursor.fetchall()
+            database.commit()
+
+        except:
+            flash("Attenzione: Squadra già inserita!")
+        finally:
+            database.close()
+
+    if 'leader' in session:
+        return render_template("formCreaSquadra.html", usernamesession=session['nome'] + " " + session
+        ['cognome'], totalepartecipanti=(
+                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader, totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini)
+    else:
+        return redirect(url_for('login'))
+
+app.run(host="127.0.0.1", port=5000)

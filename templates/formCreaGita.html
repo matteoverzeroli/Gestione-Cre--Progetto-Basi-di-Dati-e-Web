@@ -113,6 +113,18 @@
                         </a>
                     </li>
                     <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Crea Squadra</span>
+                        <a class="d-flex align-items-center text-muted" href="#" aria-label="Crea un nuovo evento">
+                            <span data-feather="plus-circle"></span>
+                        </a>
+                    </h6>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/formCreaSquadra">
+                            <span data-feather="shopping-cart"></span>
+                            Crea Squadra
+                        </a>
+                    </li>
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
                         <span>Crea Eventi</span>
                         <a class="d-flex align-items-center text-muted" href="#" aria-label="Crea un nuovo evento">
                             <span data-feather="plus-circle"></span>
@@ -173,6 +185,17 @@
             <h2>Crea Gita</h2>
             <form method="post" id="segretariaForm">
                 <div class="form-group">
+
+                    {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                    <ul class=flashes>
+                        {% for message in messages %}
+                        <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    {% endwith %}
+
                     <label for="tipoGita">Seleziona Gita</label>
                     <select class="form-control" name="tipoGita" id="tipoGita" required>
                         <option selected value="">Scegli...</option>
@@ -185,13 +208,15 @@
                 </div>
                 <div class="form-group">
                     <label for="luogo">Luogo</label>
-                    <input type="text" class="form-control" name="luogo" id="luogo" placeholder="Palestra di via PincoPallo" required
+                    <input type="text" class="form-control" name="luogo" id="luogo"
+                           placeholder="Palestra di via PincoPallo" required
                            maxlength="50">
                 </div>
                 <div class="it-datepicker-wrapper">
                     <div class="form-group">
                         <label for="date">Data</label>
-                        <input class="form-control it-date-datepicker" name="date" id="date" type="date" placeholder="gg/mm/aaaa"
+                        <input class="form-control it-date-datepicker" name="date" id="date" type="date"
+                               placeholder="gg/mm/aaaa"
                                required>
                     </div>
                 </div>
@@ -203,7 +228,8 @@
                 </div>
                 <div class="form-group">
                     <label for="descrizione">Descrizione</label>
-                    <textarea class="form-control" name="descrizione" id="descrizione" rows="3" required maxlength="50"></textarea>
+                    <textarea class="form-control" name="descrizione" id="descrizione" rows="3" required
+                              maxlength="50"></textarea>
                 </div>
                 <div class="float-right">
                     <input type="submit" class="btn btn-primary btn-lg mb-1" value="Crea Gita">

@@ -113,6 +113,18 @@
                         </a>
                     </li>
                     <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Crea Squadra</span>
+                        <a class="d-flex align-items-center text-muted" href="#" aria-label="Crea un nuovo evento">
+                            <span data-feather="plus-circle"></span>
+                        </a>
+                    </h6>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/formCreaSquadra">
+                            <span data-feather="shopping-cart"></span>
+                            Crea Squadra
+                        </a>
+                    </li>
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
                         <span>Crea Eventi</span>
                         <a class="d-flex align-items-center text-muted" href="#" aria-label="Crea un nuovo evento">
                             <span data-feather="plus-circle"></span>
@@ -172,6 +184,17 @@
             <h2>Crea Gioco</h2>
             <form method="post" id="segretariaForm">
                 <div class="form-group">
+
+                    {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                    <ul class=flashes>
+                        {% for message in messages %}
+                        <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    {% endwith %}
+
                     <label for="tipoGioco">Seleziona Gioco</label>
                     <select class="form-control" name="tipoGioco" id="tipoGioco" required>
                         <option selected value="">Scegli...</option>
@@ -184,30 +207,34 @@
                 </div>
                 <div class="form-group">
                     <label for="luogo">Luogo</label>
-                    <input type="text" name="luogo" class="form-control" id="luogo" placeholder="Palestra di via PincoPallo" required
+                    <input type="text" name="luogo" class="form-control" id="luogo"
+                           placeholder="Palestra di via PincoPallo" required
                            maxlength="50">
                 </div>
                 <div class="it-datepicker-wrapper">
                     <div class="form-group">
                         <label for="date">Data</label>
-                        <input class="form-control it-date-datepicker" name="date" id="date" type="date" placeholder="gg/mm/aaaa"
+                        <input class="form-control it-date-datepicker" name="date" id="date" type="date"
+                               placeholder="gg/mm/aaaa"
                                required>
                     </div>
                 </div>
                 <div class="it-timepicker-wrapper">
                     <div class="form-group">
                         <label for="time">Data</label>
-                        <input class="form-control it-time-datepicker" name="time" id="time" type="time" placeholder="hh/mm"
+                        <input class="form-control it-time-datepicker" name="time" id="time" type="time"
+                               placeholder="hh/mm"
                                required>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="descrizione">Descrizione</label>
-                    <textarea class="form-control"  name="descrizione" id="descrizione" rows="3" required maxlength="50"></textarea>
+                    <textarea class="form-control" name="descrizione" id="descrizione" rows="3" required
+                              maxlength="50"></textarea>
                 </div>
                 <div class="form-group">
                     <label for="punteggio">Punteggio</label>
-                    <select class="form-control" name="punteggio"id="punteggio">
+                    <select class="form-control" name="punteggio" id="punteggio">
                         <option>0</option>
                         <option>1</option>
                         <option>2</option>
