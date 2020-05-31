@@ -343,6 +343,8 @@ def home_leader():
         cursor.execute("DELETE FROM PERSONALE WHERE Matricola= ?;", [session['matricola']])
         database.commit()
         database.close()
+        global totale_leader
+        totale_leader -= 1
         return redirect(url_for("logout"))
 
     if 'leader' in session:
@@ -383,6 +385,10 @@ def home_segretaria():
         cursor.execute("DELETE FROM PERSONALE WHERE Matricola= ?;", [session['matricola']])
         database.commit()
         database.close()
+
+        global totale_segretarie
+        totale_segretarie -=1
+
         return redirect(url_for("logout"))
 
     if 'segretaria' in session:
@@ -423,6 +429,8 @@ def home_responsabile():
         cursor.execute("DELETE FROM PERSONALE WHERE Matricola= ?;", [session['matricola']])
         database.commit()
         database.close()
+        global totale_responsabili
+        totale_responsabili -=1
         return redirect(url_for("logout"))
 
     if 'responsabile' in session:
@@ -463,6 +471,8 @@ def home_esterno():
         cursor.execute("DELETE FROM PERSONALE WHERE Matricola= ?;", [session['matricola']])
         database.commit()
         database.close()
+        global totale_esterni
+        totale_esterni -= 1
         return redirect(url_for("logout"))
 
     if 'esterno' in session:
@@ -503,6 +513,8 @@ def home_animatore():
         cursor.execute("DELETE FROM PERSONALE WHERE Matricola= ?;", [session['matricola']])
         database.commit()
         database.close()
+        global totale_animatori
+        totale_animatori -= 1
         return redirect(url_for("logout"))
 
     if 'animatore' in session:
@@ -535,6 +547,8 @@ def home_bambino():
                    'telefono'], request.form['cellulare']
         database.commit()
         database.close()
+        global totale_bambini
+        totale_bambini -= 1
         updateSessionData('leader', rows)
 
     elif request.method == 'POST' and 'form_elimina' in request.form:
