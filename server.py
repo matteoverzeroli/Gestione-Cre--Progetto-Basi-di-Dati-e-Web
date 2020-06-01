@@ -341,16 +341,25 @@ def home_leader():
         updateSessionData('leader', rows)
 
     if 'leader' in session:
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+
+        cursor.execute("SELECT TipoEvento, Luogo, Data, Ora, Descrizione FROM EVENTO ORDER BY Data ASC, Ora ASC")
+        rows = cursor.fetchall()
+        database.close()
         return render_template("homeLEADER.html", usernamesession=session['nome'] + " " + session
-        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
                                indirizzo=session['indirizzo'],
                                telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
-                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
-                               totaleleader=totale_leader, totalesegretarie=totale_segretarie,
+                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader,
+                               totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
-                               totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
-                               totalebambini=totale_bambini)
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini,
+                               listeventi=rows)
     else:
         return redirect(url_for('login'))
 
@@ -385,16 +394,25 @@ def home_segretaria():
         return redirect(url_for("logout"))
 
     if 'segretaria' in session:
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+
+        cursor.execute("SELECT TipoEvento, Luogo, Data, Ora, Descrizione FROM EVENTO ORDER BY Data ASC, Ora ASC")
+        rows = cursor.fetchall()
+        database.close()
         return render_template("homeSEGRETARIA.html", usernamesession=session['nome'] + " " + session
-        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
                                indirizzo=session['indirizzo'],
                                telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
-                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
-                               totaleleader=totale_leader, totalesegretarie=totale_segretarie,
+                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader,
+                               totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
-                               totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
-                               totalebambini=totale_bambini)
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini,
+                               listeventi=rows)
     else:
         return redirect(url_for('login'))
 
@@ -427,16 +445,24 @@ def home_responsabile():
         return redirect(url_for("logout"))
 
     if 'responsabile' in session:
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+
+        cursor.execute("SELECT TipoEvento, Luogo, Data, Ora, Descrizione FROM EVENTO ORDER BY Data ASC, Ora ASC")
+        rows = cursor.fetchall()
+        database.close()
         return render_template("homeRESPONSABILE.html", usernamesession=session['nome'] + " " + session
-        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
                                indirizzo=session['indirizzo'],
                                telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
-                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader, totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
-                               totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
-                               totalebambini=totale_bambini)
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini,
+                               listeventi=rows)
     else:
         return redirect(url_for('login'))
 
@@ -476,17 +502,21 @@ def home_esterno():
             "SELECT E.TipoEvento,E.Luogo,E.Data,E.Ora,E.Descrizione,P.Nome,P.Cognome FROM EVENTO E JOIN GESTISCE G ON (E.TipoEvento,E.Luogo,E.Data,E.Ora) = (G.TipoEvento,G.Luogo,G.Data,G.Ora)  JOIN PERSONALE P ON E.MatrLeader= P.Matricola WHERE G.MatrEsterno = ?;",
             [session['matricola']])
         rows = cursor.fetchall()
+        database.close()
 
         return render_template("homeESTERNO.html", usernamesession=session['nome'] + " " + session
-        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
                                indirizzo=session['indirizzo'],
                                telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
-                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
-                               totaleleader=totale_leader, totalesegretarie=totale_segretarie,
+                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader,
+                               totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
-                               totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
-                               totalebambini=totale_bambini, listlaboratori=rows)
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini,
+                               listlaboratori=rows)
     else:
         return redirect(url_for('login'))
 
@@ -519,16 +549,25 @@ def home_animatore():
         return redirect(url_for("logout"))
 
     if 'animatore' in session:
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+
+        cursor.execute("SELECT TipoEvento, Luogo, Data, Ora, Descrizione FROM EVENTO ORDER BY Data ASC, Ora ASC")
+        rows = cursor.fetchall()
+        database.close()
         return render_template("homeANIMATORE.html", usernamesession=session['nome'] + " " + session
-        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
                                indirizzo=session['indirizzo'],
                                telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
-                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
-                               totaleleader=totale_leader, totalesegretarie=totale_segretarie,
+                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader,
+                               totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
-                               totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
-                               totalebambini=totale_bambini)
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini,
+                               listeventi=rows)
     else:
         return redirect(url_for('login'))
 
@@ -561,16 +600,25 @@ def home_bambino():
         return redirect(url_for("logout"))
 
     if 'bambino' in session:
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+
+        cursor.execute("SELECT TipoEvento, Luogo, Data, Ora, Descrizione FROM EVENTO ORDER BY Data ASC, Ora ASC")
+        rows = cursor.fetchall()
+        database.close()
         return render_template("homeBAMBINO.html", usernamesession=session['nome'] + " " + session
-        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
                                indirizzo=session['indirizzo'],
                                telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
-                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
-                               totaleleader=totale_leader, totalesegretarie=totale_segretarie,
+                                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader,
+                               totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
-                               totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
-                               totalebambini=totale_bambini)
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini,
+                               listeventi=rows)
     else:
         return redirect(url_for('login'))
 
@@ -1009,14 +1057,106 @@ def form_crea_squadra():
 
     if 'leader' in session:
         return render_template("formCreaSquadra.html", usernamesession=session['nome'] + " " + session
-        ['cognome'], totalepartecipanti=(
-                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
-                               totaleleader=totale_leader, totalesegretarie=totale_segretarie,
+                                ['cognome'], totalepartecipanti=(
+                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader,
+                               totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
-                               totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
                                totalebambini=totale_bambini)
     else:
         return redirect(url_for('login'))
 
 
-app.run(host="127.0.0.1", port=5000)
+@app.route('/formAggiungiMovimento', methods=['GET', 'POST'])
+def form_aggiungi_movimento():
+    if request.method == 'POST':
+        tipoEvento = request.form['tipoEvento']
+        descrizione = request.form['descrizione']
+        valore = request.form['valore']
+        if int(valore) >= 0:
+            inout = 1
+        else:
+            inout = 0
+
+        if str(tipoEvento).split()[0].__contains__("Cucina"):
+            idEvento = "201"
+        elif str(tipoEvento).split()[0].__contains__("Pittura"):
+            idEvento = "202"
+        elif str(tipoEvento).split()[0].__contains__("Circo"):
+            idEvento = "203"
+        elif str(tipoEvento).split()[0].__contains__("Compiti"):
+            idEvento = "204"
+        elif str(tipoEvento).split()[0].__contains__("Musica"):
+            idEvento = "205"
+        elif str(tipoEvento).split()[0].__contains__("Altro Laboratorio"):
+            idEvento = "206"
+        elif str(tipoEvento).split()[0].__contains__("Calcio"):
+            idEvento = "101"
+        elif str(tipoEvento).split()[0].__contains__("Pallavolo"):
+            idEvento = "102"
+        elif str(tipoEvento).split()[0].__contains__("Palla Prigioniera"):
+            idEvento = "103"
+        elif str(tipoEvento).split()[0].__contains__("Caccia al tesoro"):
+            idEvento = "104"
+        elif str(tipoEvento).split()[0].__contains__("Altro gioco"):
+            idEvento = "105"
+        elif str(tipoEvento).split()[0].__contains__("Gita in montagna"):
+            idEvento = "1"
+        elif str(tipoEvento).split()[0].__contains__("Gita al mare"):
+            idEvento = "2"
+        elif str(tipoEvento).split()[0].__contains__("Gita al lago"):
+            idEvento = "3"
+        elif str(tipoEvento).split()[0].__contains__("Gita culturale"):
+            idEvento = "4"
+        elif str(tipoEvento).split()[0].__contains__("Altra Gita"):
+            idEvento = "5"
+
+
+
+
+
+
+
+        database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = 1")
+
+        cursor = database.cursor()
+
+        try:
+            cursor.execute(
+                "INSERT INTO MOVIMENTO(TipoEvento,Luogo,Data, Ora, Descrizione, Valore, Inout, MatrSegretaria) VALUES (?,?,?,?,?,?,?,?);",
+                [idEvento, str(tipoEvento).split()[1], str(tipoEvento).split()[2], str(tipoEvento).split()[3], descrizione, abs(float(valore)), inout, session['matricola']])
+
+            cursor.fetchall()
+
+            database.commit()
+        except (sqlite3.Error, sqlite3.Warning) as e:
+            print(e)
+            flash("Attenzione: Errore!")
+        finally:
+            database.close()
+
+    if 'segretaria' in session:
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+        cursor.execute(
+            "SELECT TipoEvento, Luogo, Data, Ora, Descrizione FROM EVENTO ORDER BY Data ASC, Ora ASC")
+        listeventi = cursor.fetchall()
+        database.close()
+        return render_template("formAggiungiMovimento.html", usernamesession=session['nome'] + " " + session
+                                ['cognome'], totalepartecipanti=(
+                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader,
+                               totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini,
+                               listeventi=listeventi)
+    else:
+        return redirect(url_for('login'))
+
+
+app.run(host="127.0.0.1", port=5000, debug='true')
