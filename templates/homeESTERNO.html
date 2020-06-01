@@ -49,7 +49,7 @@
 
 <body>
 <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-    <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="/homeLEADER">Cre Grest</a>
+    <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="#">Cre Grest</a>
     <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse"
             data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -93,7 +93,6 @@
                 <table class="table table-striped table-sm">
                     <thead>
                     <tr>
-                        <th>Id Evento</th>
                         <th>Tipo Evento</th>
                         <th>Luogo</th>
                         <th>Data</th>
@@ -108,60 +107,24 @@
                     {% for laboratorio in listlaboratori%}
                     <tr>
                         {% if laboratorio[0] == "201" %}
-                        <td>{{ laboratorio [0] }}</td>
                         <td>Cucina</td>
-                        <td>{{ laboratorio [1] }}</td>
-                        <td>{{ laboratorio[2] }}</td>
-                        <td>{{ laboratorio [3] }}</td>
-                        <td>{{ laboratorio [4] }}</td>
-                        <td>{{ laboratorio [5] }}</td>
-                        <td>{{ laboratorio [6] }}</td>
                         {% elif laboratorio[0] == "202" %}
-                        <td>{{ laboratorio [0] }}</td>
                         <td>Pittura</td>
-                        <td>{{ laboratorio [1] }}</td>
-                        <td>{{ laboratorio[2] }}</td>
-                        <td>{{ laboratorio [3] }}</td>
-                        <td>{{ laboratorio [4] }}</td>
-                        <td>{{ laboratorio [5] }}</td>
-                        <td>{{ laboratorio [6] }}</td>
                         {% elif laboratorio[0] == "203" %}
-                        <td>{{ laboratorio [0] }}</td>
                         <td>Circo</td>
-                        <td>{{ laboratorio [1] }}</td>
-                        <td>{{ laboratorio[2] }}</td>
-                        <td>{{ laboratorio [3] }}</td>
-                        <td>{{ laboratorio [4] }}</td>
-                        <td>{{ laboratorio [5] }}</td>
-                        <td>{{ laboratorio [6] }}</td>
                         {% elif laboratorio[0] == "204" %}
-                        <td>{{ laboratorio [0] }}</td>
                         <td>Compiti</td>
-                        <td>{{ laboratorio [1] }}</td>
-                        <td>{{ laboratorio[2] }}</td>
-                        <td>{{ laboratorio [3] }}</td>
-                        <td>{{ laboratorio [4] }}</td>
-                        <td>{{ laboratorio [5] }}</td>
-                        <td>{{ laboratorio [6] }}</td>
                         {% elif laboratorio[0] == "205" %}
-                        <td>{{ laboratorio [0] }}</td>
                         <td>Musica</td>
-                        <td>{{ laboratorio [1] }}</td>
-                        <td>{{ laboratorio[2] }}</td>
-                        <td>{{ laboratorio [3] }}</td>
-                        <td>{{ laboratorio [4] }}</td>
-                        <td>{{ laboratorio [5] }}</td>
-                        <td>{{ laboratorio [6] }}</td>
                         {% elif laboratorio[0] == "206" %}
-                        <td>{{ laboratorio [0] }}</td>
                         <td>Altro</td>
+                        {% endif %}
                         <td>{{ laboratorio [1] }}</td>
                         <td>{{ laboratorio[2] }}</td>
                         <td>{{ laboratorio [3] }}</td>
                         <td>{{ laboratorio [4] }}</td>
                         <td>{{ laboratorio [5] }}</td>
                         <td>{{ laboratorio [6] }}</td>
-                        {% endif %}
 
                     </tr>
                     {% endfor %}

@@ -348,11 +348,11 @@ def home_leader():
         rows = cursor.fetchall()
         database.close()
         return render_template("homeLEADER.html", usernamesession=session['nome'] + " " + session
-                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
                                indirizzo=session['indirizzo'],
                                telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
-                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader,
                                totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
@@ -401,11 +401,11 @@ def home_segretaria():
         rows = cursor.fetchall()
         database.close()
         return render_template("homeSEGRETARIA.html", usernamesession=session['nome'] + " " + session
-                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
                                indirizzo=session['indirizzo'],
                                telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
-                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader,
                                totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
@@ -452,11 +452,11 @@ def home_responsabile():
         rows = cursor.fetchall()
         database.close()
         return render_template("homeRESPONSABILE.html", usernamesession=session['nome'] + " " + session
-                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
                                indirizzo=session['indirizzo'],
                                telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
-                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader, totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
                                totaleesterni=totale_esterni,
@@ -505,11 +505,11 @@ def home_esterno():
         database.close()
 
         return render_template("homeESTERNO.html", usernamesession=session['nome'] + " " + session
-                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
                                indirizzo=session['indirizzo'],
                                telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
-                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader,
                                totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
@@ -551,16 +551,16 @@ def home_animatore():
     if 'animatore' in session:
         database = sqlite3.connect(path)
         cursor = database.cursor()
-
+        # todo da sistemare con gli eventi solo della propria squadra
         cursor.execute("SELECT TipoEvento, Luogo, Data, Ora, Descrizione FROM EVENTO ORDER BY Data ASC, Ora ASC")
         rows = cursor.fetchall()
         database.close()
         return render_template("homeANIMATORE.html", usernamesession=session['nome'] + " " + session
-                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
                                indirizzo=session['indirizzo'],
                                telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
-                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader,
                                totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
@@ -602,16 +602,16 @@ def home_bambino():
     if 'bambino' in session:
         database = sqlite3.connect(path)
         cursor = database.cursor()
-
+        # todo da sistemare con gli eventi della propria squadra
         cursor.execute("SELECT TipoEvento, Luogo, Data, Ora, Descrizione FROM EVENTO ORDER BY Data ASC, Ora ASC")
         rows = cursor.fetchall()
         database.close()
         return render_template("homeBAMBINO.html", usernamesession=session['nome'] + " " + session
-                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
                                indirizzo=session['indirizzo'],
                                telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
-                                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader,
                                totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
@@ -1057,8 +1057,8 @@ def form_crea_squadra():
 
     if 'leader' in session:
         return render_template("formCreaSquadra.html", usernamesession=session['nome'] + " " + session
-                                ['cognome'], totalepartecipanti=(
-                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+        ['cognome'], totalepartecipanti=(
+                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader,
                                totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
@@ -1075,7 +1075,7 @@ def form_aggiungi_movimento():
         tipoEvento = request.form['tipoEvento']
         descrizione = request.form['descrizione']
         valore = request.form['valore']
-        if int(valore) >= 0:
+        if float(valore) >= 0:
             inout = 1
         else:
             inout = 0
@@ -1113,12 +1113,6 @@ def form_aggiungi_movimento():
         elif str(tipoEvento).split()[0].__contains__("Altra Gita"):
             idEvento = "5"
 
-
-
-
-
-
-
         database = sqlite3.connect(path)
         database.execute("PRAGMA foreign_keys = 1")
 
@@ -1127,7 +1121,8 @@ def form_aggiungi_movimento():
         try:
             cursor.execute(
                 "INSERT INTO MOVIMENTO(TipoEvento,Luogo,Data, Ora, Descrizione, Valore, Inout, MatrSegretaria) VALUES (?,?,?,?,?,?,?,?);",
-                [idEvento, str(tipoEvento).split()[1], str(tipoEvento).split()[2], str(tipoEvento).split()[3], descrizione, abs(float(valore)), inout, session['matricola']])
+                [idEvento, str(tipoEvento).split()[1], str(tipoEvento).split()[2], str(tipoEvento).split()[3],
+                 descrizione, abs(float(valore)), inout, session['matricola']])
 
             cursor.fetchall()
 
@@ -1146,8 +1141,8 @@ def form_aggiungi_movimento():
         listeventi = cursor.fetchall()
         database.close()
         return render_template("formAggiungiMovimento.html", usernamesession=session['nome'] + " " + session
-                                ['cognome'], totalepartecipanti=(
-                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+        ['cognome'], totalepartecipanti=(
+                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader,
                                totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
@@ -1155,6 +1150,29 @@ def form_aggiungi_movimento():
                                totaleanimatori=totale_animatori,
                                totalebambini=totale_bambini,
                                listeventi=listeventi)
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/tabellaMovimenti', methods=['GET'])
+def tabella_movimenti():
+    if 'segretaria' in session:
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+        cursor.execute(
+            "SELECT TipoEvento, Luogo, Data, Ora, Descrizione,Valore,InOut,MatrSegretaria FROM MOVIMENTO ORDER BY Data ASC, Ora ASC")
+        listmovimenti = cursor.fetchall()
+        database.close()
+        return render_template("tabellaMovimenti.html", usernamesession=session['nome'] + " " + session
+        ['cognome'], totalepartecipanti=(
+                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader,
+                               totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini,
+                               listmovimenti=listmovimenti)
     else:
         return redirect(url_for('login'))
 
