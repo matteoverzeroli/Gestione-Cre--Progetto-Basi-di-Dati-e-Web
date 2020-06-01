@@ -10,6 +10,7 @@ path = 'database.db'
 database = sqlite3.connect(path)
 cursor = database.cursor()
 
+
 # definizione ruoli della popolazione di riferimento
 ruolo_partecipanti = ['leader', 'segretaria', 'responsabile', 'esterno', 'animatore', 'bambino']
 
@@ -98,8 +99,7 @@ database.execute("CREATE TABLE IF NOT EXISTS EVENTO("
                  "MatrLeader CHAR(5) NOT NULL DEFAULT '00001', "
                  "PRIMARY KEY (TipoEvento,Luogo,Data,Ora),"
                  "FOREIGN KEY (MatrLeader) "
-                 "REFERENCES PERSONALE(Matricola)"
-                 "ON DELETE SET DEFAULT );")
+                 "REFERENCES PERSONALE(Matricola));")
 
 database.execute("CREATE TABLE IF NOT EXISTS SQUADRA("
                  "Nome VARCHAR(10),"
@@ -131,38 +131,43 @@ database.execute("CREATE TABLE IF NOT EXISTS ARBITRA("
                  "TipoEvento VARCHAR(10) NOT NULL, "
                  "Luogo VARCHAR(50) NOT NULL,"
                  "Data DATE NOT NULL,"
-                 "Ora TIME NOT NULL,"
-                 "FOREIGN KEY (TipoEvento,Luogo,Data,Ora)"
-                 "REFERENCES EVENTO(TipoEvento,Lugo,Data,Ora));")
+                 "Ora TIME NOT NULL, "
+                 "PRIMARY KEY (MatrResponsabile, TipoEvento,Luogo,Data,Ora), "
+                 "FOREIGN KEY (TipoEvento,Luogo,Data,Ora) "
+                 "REFERENCES EVENTO(TipoEvento,Luogo,Data,Ora));")
 
 database.execute("CREATE TABLE IF NOT EXISTS GESTISCE("
                  "MatrEsterno CHAR(5) REFERENCES PERSONALE(Matricola),"
                  "TipoEvento VARCHAR(10) NOT NULL, "
                  "Luogo VARCHAR(50) NOT NULL,"
                  "Data DATE NOT NULL,"
-                 "Ora TIME NOT NULL,"
-                 "FOREIGN KEY (TipoEvento,Luogo,Data,Ora)"
-                 "REFERENCES EVENTO(TipoEvento,Lugo,Data,Ora));")
+                 "Ora TIME NOT NULL, "
+                 "PRIMARY KEY (MatrEsterno,TipoEvento,Luogo,Data,Ora), "
+                 "FOREIGN KEY (TipoEvento,Luogo,Data,Ora) "
+                 "REFERENCES EVENTO(TipoEvento,Luogo,Data,Ora));")
 
-database.execute("CREATE TABLE IF NOT EXISTS PARTECIPA("
+
+database.execute("CREATE TABLE IF NOT EXISTS ISCRIZIONE("
                  "MatrBambino CHAR(5) REFERENCES BAMBINO(Matricola),"
                  "TipoEvento VARCHAR(10) NOT NULL, "
                  "Luogo VARCHAR(50) NOT NULL,"
                  "Data DATE NOT NULL,"
                  "Ora TIME NOT NULL,"
                  "Costo FLOAT NOT NULL,"
-                 "Scadenza DATE NOT NULL, "
-                 "FOREIGN KEY (TipoEvento,Luogo,Data,Ora)"
+                 "Scadenza DATE NOT NULL,"
+                 "PRIMARY KEY (MatrBambino,TipoEvento,Luogo,Data,Ora),"
+                 "FOREIGN KEY (TipoEvento,Luogo,Data,Ora) "
                  "REFERENCES EVENTO(TipoEvento,Lugo,Data,Ora));")
 
-database.execute("CREATE TABLE IF NOT EXISTS ISCRIZIONE("
+database.execute("CREATE TABLE IF NOT EXISTS PARTECIPA("
                  "NomeSquadra VARCHAR(10) REFERENCES SQUADRA(Nome),"
                  "TipoEvento VARCHAR(10) NOT NULL, "
                  "Luogo VARCHAR(50) NOT NULL,"
                  "Data DATE NOT NULL,"
-                 "Ora TIME NOT NULL,"
-                 "FOREIGN KEY (TipoEvento,Luogo,Data,Ora)"
-                 "REFERENCES EVENTO(TipoEvento,Lugo,Data,Ora));")
+                 "Ora TIME NOT NULL, "
+                 "PRIMARY KEY (NomeSquadra,TipoEvento,Luogo,Data,Ora),"
+                 "FOREIGN KEY (TipoEvento,Luogo,Data,Ora) "
+                 "REFERENCES EVENTO(TipoEvento,Luogo,Data,Ora));")
 
 # inserisco il leader se non già inserito
 try:
@@ -337,16 +342,6 @@ def home_leader():
         database.close()
         updateSessionData('leader', rows)
 
-    elif request.method == 'POST' and 'form_elimina' in request.form:
-        database = sqlite3.connect(path)
-        cursor = database.cursor();
-        cursor.execute("DELETE FROM PERSONALE WHERE Matricola= ?;", [session['matricola']])
-        database.commit()
-        database.close()
-        global totale_leader
-        totale_leader -= 1
-        return redirect(url_for("logout"))
-
     if 'leader' in session:
         return render_template("homeLEADER.html", usernamesession=session['nome'] + " " + session
         ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
@@ -377,7 +372,7 @@ def home_segretaria():
                    'telefono'], request.form['cellulare']
         database.commit()
         database.close()
-        updateSessionData('leader', rows)
+        updateSessionData('segretaria', rows)
 
     elif request.method == 'POST' and 'form_elimina' in request.form:
         database = sqlite3.connect(path)
@@ -387,7 +382,7 @@ def home_segretaria():
         database.close()
 
         global totale_segretarie
-        totale_segretarie -=1
+        totale_segretarie -= 1
 
         return redirect(url_for("logout"))
 
@@ -421,7 +416,7 @@ def home_responsabile():
                    'telefono'], request.form['cellulare']
         database.commit()
         database.close()
-        updateSessionData('leader', rows)
+        updateSessionData('responsabile', rows)
 
     elif request.method == 'POST' and 'form_elimina' in request.form:
         database = sqlite3.connect(path)
@@ -430,7 +425,7 @@ def home_responsabile():
         database.commit()
         database.close()
         global totale_responsabili
-        totale_responsabili -=1
+        totale_responsabili -= 1
         return redirect(url_for("logout"))
 
     if 'responsabile' in session:
@@ -463,7 +458,7 @@ def home_esterno():
                    'telefono'], request.form['cellulare']
         database.commit()
         database.close()
-        updateSessionData('leader', rows)
+        updateSessionData('esterno', rows)
 
     elif request.method == 'POST' and 'form_elimina' in request.form:
         database = sqlite3.connect(path)
@@ -505,7 +500,7 @@ def home_animatore():
                    'telefono'], request.form['cellulare']
         database.commit()
         database.close()
-        updateSessionData('leader', rows)
+        updateSessionData('animatore', rows)
 
     elif request.method == 'POST' and 'form_elimina' in request.form:
         database = sqlite3.connect(path)
@@ -549,7 +544,7 @@ def home_bambino():
         database.close()
         global totale_bambini
         totale_bambini -= 1
-        updateSessionData('leader', rows)
+        updateSessionData('bambino', rows)
 
     elif request.method == 'POST' and 'form_elimina' in request.form:
         database = sqlite3.connect(path)
@@ -689,15 +684,31 @@ def form_inserisci_esterno():
         indirizzo = request.form['indirizzo']
         telefono = request.form['telefono']
         cellulare = request.form['cellulare']
+        nomelaboratorio = request.form['nomelaboratorio']
 
         database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = 1")
+
         cursor = database.cursor()
+
+
         cursor.execute(
             "INSERT INTO PERSONALE VALUES (?,?,?,?,?,?,?,?,?,?);",
             [matricola, password, nome, cognome, email, data, indirizzo, telefono, cellulare, 'esterno'])
 
         cursor.fetchall()
         database.commit()
+
+        cursor = database.cursor()
+
+        cursor.execute(
+            "INSERT INTO GESTISCE VALUES (?,?,?,?,?);",
+            [matricola, str(nomelaboratorio).split()[0], str(nomelaboratorio).split()[3],
+             str(nomelaboratorio).split()[4], str(nomelaboratorio).split()[5]])
+
+        cursor.fetchall()
+        database.commit()
+
         database.close()
 
         global totale_esterni
@@ -709,6 +720,12 @@ def form_inserisci_esterno():
         return redirect(url_for('form_inserisci_esterno'))
 
     if 'leader' in session:
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+        cursor.execute(
+            "SELECT TipoEvento, Descrizione,Luogo,Data,Ora FROM EVENTO WHERE TipoEvento > 200 and TipoEvento < 300")
+        laboratori = cursor.fetchall()
+        database.close()
         return render_template("formInserisciEsterno.html",
                                matricola=str((matricola_max + 1)).zfill(5),
                                usernamesession=session['nome'] + " " + session
@@ -717,7 +734,7 @@ def form_inserisci_esterno():
                                totaleleader=totale_leader, totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
                                totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
-                               totalebambini=totale_bambini)
+                               totalebambini=totale_bambini, listlaboratori=laboratori)
     else:
         return redirect(url_for('login'))
 
@@ -738,6 +755,8 @@ def form_inserisci_animatore():
         nomesquadra = request.form.get('nomesquadra')
 
         database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = 1")
+
         cursor = database.cursor()
         cursor.execute(
             "INSERT INTO ANIMATORE VALUES (?,?,?,?,?,?,?,?,?,?,?);",
@@ -799,10 +818,13 @@ def form_inserisci_bambino():
         nomesquadra = request.form.get('nomesquadra')
 
         database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = 1")
+
         cursor = database.cursor()
         cursor.execute(
             "INSERT INTO BAMBINO VALUES (?,?,?,?,?,?,?,?,?,?,?,?);",
-            [matricola, password, nome, cognome, email, data, indirizzo, telefono, cellulare, nominativomadre, nominativopadre,
+            [matricola, password, nome, cognome, email, data, indirizzo, telefono, cellulare, nominativomadre,
+             nominativopadre,
              nomesquadra])
 
         cursor.fetchall()
@@ -849,6 +871,8 @@ def form_crea_gita():
         descrizione = request.form['descrizione']
 
         database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = 1")
+
         cursor = database.cursor()
 
         # inserisco evento se non già inserito
@@ -859,7 +883,7 @@ def form_crea_gita():
             cursor.fetchall()
             database.commit()
         except:
-            flash("Attenzione")
+            flash("Attenzione: gita già inserita!")
         finally:
             database.close()
 
@@ -886,6 +910,8 @@ def form_crea_gioco():
         punteggio = request.form['punteggio']
 
         database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = 1")
+
         cursor = database.cursor()
 
         # inserisco evento se non già inserito
@@ -897,7 +923,7 @@ def form_crea_gioco():
             cursor.fetchall()
             database.commit()
         except:
-           flash("Attenzione: gioco già inserito!")
+            flash("Attenzione: gioco già inserito!")
         finally:
             database.close()
 
@@ -923,6 +949,8 @@ def form_crea_laboratorio():
         descrizione = request.form['descrizione']
 
         database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = 1")
+
         cursor = database.cursor()
         # inserisco evento se non già presente
         try:
@@ -948,7 +976,8 @@ def form_crea_laboratorio():
     else:
         return redirect(url_for('login'))
 
-@app.route('/formCreaSquadra', methods=['GET','POST'])
+
+@app.route('/formCreaSquadra', methods=['GET', 'POST'])
 def form_crea_squadra():
     if request.method == 'POST':
         nomesquadra = request.form['nomesquadra']
@@ -956,12 +985,14 @@ def form_crea_squadra():
         mottosquadra = request.form['mottosquadra']
 
         database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = 1")
+
         cursor = database.cursor()
 
         try:
             cursor.execute(
                 "INSERT INTO SQUADRA(Nome,Colore,Motto) VALUES (?,?,?);",
-                [nomesquadra,coloresquadra,mottosquadra])
+                [nomesquadra, coloresquadra, mottosquadra])
 
             cursor.fetchall()
             database.commit()
@@ -981,5 +1012,6 @@ def form_crea_squadra():
                                totalebambini=totale_bambini)
     else:
         return redirect(url_for('login'))
+
 
 app.run(host="127.0.0.1", port=5000)
