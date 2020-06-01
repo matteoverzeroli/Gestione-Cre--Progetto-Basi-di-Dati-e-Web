@@ -10,7 +10,6 @@ path = 'database.db'
 database = sqlite3.connect(path)
 cursor = database.cursor()
 
-
 # definizione ruoli della popolazione di riferimento
 ruolo_partecipanti = ['leader', 'segretaria', 'responsabile', 'esterno', 'animatore', 'bambino']
 
@@ -145,7 +144,6 @@ database.execute("CREATE TABLE IF NOT EXISTS GESTISCE("
                  "PRIMARY KEY (MatrEsterno,TipoEvento,Luogo,Data,Ora), "
                  "FOREIGN KEY (TipoEvento,Luogo,Data,Ora) "
                  "REFERENCES EVENTO(TipoEvento,Luogo,Data,Ora));")
-
 
 database.execute("CREATE TABLE IF NOT EXISTS ISCRIZIONE("
                  "MatrBambino CHAR(5) REFERENCES BAMBINO(Matricola),"
@@ -471,6 +469,14 @@ def home_esterno():
         return redirect(url_for("logout"))
 
     if 'esterno' in session:
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+
+        cursor.execute(
+            "SELECT E.TipoEvento,E.Luogo,E.Data,E.Ora,E.Descrizione,P.Nome,P.Cognome FROM EVENTO E JOIN GESTISCE G ON (E.TipoEvento,E.Luogo,E.Data,E.Ora) = (G.TipoEvento,G.Luogo,G.Data,G.Ora)  JOIN PERSONALE P ON E.MatrLeader= P.Matricola WHERE G.MatrEsterno = ?;",
+            [session['matricola']])
+        rows = cursor.fetchall()
+
         return render_template("homeESTERNO.html", usernamesession=session['nome'] + " " + session
         ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
@@ -480,7 +486,7 @@ def home_esterno():
                                totaleleader=totale_leader, totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
                                totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
-                               totalebambini=totale_bambini)
+                               totalebambini=totale_bambini, listlaboratori=rows)
     else:
         return redirect(url_for('login'))
 
@@ -690,7 +696,6 @@ def form_inserisci_esterno():
         database.execute("PRAGMA foreign_keys = 1")
 
         cursor = database.cursor()
-
 
         cursor.execute(
             "INSERT INTO PERSONALE VALUES (?,?,?,?,?,?,?,?,?,?);",
