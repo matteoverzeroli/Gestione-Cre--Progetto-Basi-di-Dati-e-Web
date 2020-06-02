@@ -111,19 +111,19 @@ database.execute("CREATE TABLE IF NOT EXISTS APPELLOBAMBINO("
                  "IdBambino CHAR(5) REFERENCES BAMBINO(Matricola),"
                  "Data DATA NOT NULL,"
                  "Presenza BIT NOT NULL,"
-                 "PRIMARY KEY (IdBambino));")
+                 "PRIMARY KEY (IdBambino, Data));")
 
 database.execute("CREATE TABLE IF NOT EXISTS APPELLOANIMATORE("
                  "IdAnimatore CHAR(5) REFERENCES ANIMATORE(Matricola),"
                  "Data DATA NOT NULL,"
                  "Presenza BIT NOT NULL,"
-                 "PRIMARY KEY (IdAnimatore));")
+                 "PRIMARY KEY (IdAnimatore, Data));")
 
 database.execute("CREATE TABLE IF NOT EXISTS APPELLOPERSONALE("
                  "IdPersonale CHAR(5) REFERENCES PERSONALE(Matricola),"
                  "Data DATA NOT NULL,"
                  "Presenza BIT NOT NULL,"
-                 "PRIMARY KEY (IdPersonale));")
+                 "PRIMARY KEY (IdPersonale, Data));")
 
 database.execute("CREATE TABLE IF NOT EXISTS ARBITRA("
                  "MatrResponsabile CHAR(5) REFERENCES PERSONALE(Matricola),"
@@ -462,7 +462,8 @@ def home_responsabile():
                                totaleesterni=totale_esterni,
                                totaleanimatori=totale_animatori,
                                totalebambini=totale_bambini,
-                               listeventi=rows)
+                               listeventi=rows,
+                               tipologia="Animatori")
     else:
         return redirect(url_for('login'))
 
@@ -567,7 +568,8 @@ def home_animatore():
                                totaleesterni=totale_esterni,
                                totaleanimatori=totale_animatori,
                                totalebambini=totale_bambini,
-                               listeventi=rows)
+                               listeventi=rows,
+                               tipologia=session['nomeSquadra'])
     else:
         return redirect(url_for('login'))
 
@@ -1080,37 +1082,38 @@ def form_aggiungi_movimento():
         else:
             inout = 0
 
-        if str(tipoEvento).split()[0].__contains__("Cucina"):
+        print(str(tipoEvento).split(",")[0])
+        if str(tipoEvento).split(",")[0].__contains__("Cucina"):
             idEvento = "201"
-        elif str(tipoEvento).split()[0].__contains__("Pittura"):
+        elif str(tipoEvento).split(",")[0].__contains__("Pittura"):
             idEvento = "202"
-        elif str(tipoEvento).split()[0].__contains__("Circo"):
+        elif str(tipoEvento).split(",")[0].__contains__("Circo"):
             idEvento = "203"
-        elif str(tipoEvento).split()[0].__contains__("Compiti"):
+        elif str(tipoEvento).split(",")[0].__contains__("Compiti"):
             idEvento = "204"
-        elif str(tipoEvento).split()[0].__contains__("Musica"):
+        elif str(tipoEvento).split(",")[0].__contains__("Musica"):
             idEvento = "205"
-        elif str(tipoEvento).split()[0].__contains__("Altro Laboratorio"):
+        elif str(tipoEvento).split(",")[0].__contains__("Altro Laboratorio"):
             idEvento = "206"
-        elif str(tipoEvento).split()[0].__contains__("Calcio"):
+        elif str(tipoEvento).split(",")[0].__contains__("Calcio"):
             idEvento = "101"
-        elif str(tipoEvento).split()[0].__contains__("Pallavolo"):
+        elif str(tipoEvento).split(",")[0].__contains__("Pallavolo"):
             idEvento = "102"
-        elif str(tipoEvento).split()[0].__contains__("Palla Prigioniera"):
+        elif str(tipoEvento).split(",")[0].__contains__("Palla Prigioniera"):
             idEvento = "103"
-        elif str(tipoEvento).split()[0].__contains__("Caccia al tesoro"):
+        elif str(tipoEvento).split(",")[0].__contains__("Caccia al tesoro"):
             idEvento = "104"
-        elif str(tipoEvento).split()[0].__contains__("Altro gioco"):
+        elif str(tipoEvento).split(",")[0].__contains__("Altro gioco"):
             idEvento = "105"
-        elif str(tipoEvento).split()[0].__contains__("Gita in montagna"):
+        elif str(tipoEvento).split(",")[0].__contains__("Gita in montagna"):
             idEvento = "1"
-        elif str(tipoEvento).split()[0].__contains__("Gita al mare"):
+        elif str(tipoEvento).split(",")[0].__contains__("Gita al mare"):
             idEvento = "2"
-        elif str(tipoEvento).split()[0].__contains__("Gita al lago"):
+        elif str(tipoEvento).split(",")[0].__contains__("Gita al lago"):
             idEvento = "3"
-        elif str(tipoEvento).split()[0].__contains__("Gita culturale"):
+        elif str(tipoEvento).split(",")[0].__contains__("Gita culturale"):
             idEvento = "4"
-        elif str(tipoEvento).split()[0].__contains__("Altra Gita"):
+        elif str(tipoEvento).split(",")[0].__contains__("Altra Gita"):
             idEvento = "5"
 
         database = sqlite3.connect(path)
@@ -1118,17 +1121,24 @@ def form_aggiungi_movimento():
 
         cursor = database.cursor()
 
+        print("Prova: " + str(tipoEvento).split(",")[1].replace(",", "").replace(" ", "") + idEvento)
         try:
             cursor.execute(
                 "INSERT INTO MOVIMENTO(TipoEvento,Luogo,Data, Ora, Descrizione, Valore, Inout, MatrSegretaria) VALUES (?,?,?,?,?,?,?,?);",
-                [idEvento, str(tipoEvento).split()[1], str(tipoEvento).split()[2], str(tipoEvento).split()[3],
+                [idEvento, str(tipoEvento).split(",")[1].replace(",", "").replace(" ", ""), str(tipoEvento).split(",")[2].replace(",", "").replace(" ", ""), str(tipoEvento).split(",")[3].replace(",", "").replace(" ", ""),
                  descrizione, abs(float(valore)), inout, session['matricola']])
+            #cursor.execute(
+            #    "INSERT INTO MOVIMENTO(TipoEvento,Luogo,Data, Ora, Descrizione, Valore, Inout, MatrSegretaria) VALUES (?,?,?,?,?,?,?,?);",
+            #    [idEvento, str(tipoEvento).split()[1].replace(",", "").replace(" ", ""),
+            #     str(tipoEvento).split()[2].replace(",", "").replace(" ", ""),
+            #     str(tipoEvento).split()[3].replace(",", "").replace(" ", ""),
+            #     descrizione, abs(float(valore)), inout, session['matricola']])
 
             cursor.fetchall()
 
             database.commit()
-        except (sqlite3.Error, sqlite3.Warning) as e:
-            print(e)
+        except sqlite3.Error as er:
+            print(er)
             flash("Attenzione: Errore!")
         finally:
             database.close()
@@ -1159,8 +1169,7 @@ def tabella_movimenti():
     if 'segretaria' in session:
         database = sqlite3.connect(path)
         cursor = database.cursor()
-        cursor.execute(
-            "SELECT TipoEvento, Luogo, Data, Ora, Descrizione,Valore,InOut,MatrSegretaria FROM MOVIMENTO ORDER BY Data ASC, Ora ASC")
+        cursor.execute("SELECT TipoEvento, Luogo, Data, Ora, Descrizione,Valore,InOut,MatrSegretaria FROM MOVIMENTO ORDER BY Data ASC, Ora ASC")
         listmovimenti = cursor.fetchall()
         database.close()
         return render_template("tabellaMovimenti.html", usernamesession=session['nome'] + " " + session
@@ -1173,6 +1182,154 @@ def tabella_movimenti():
                                totaleanimatori=totale_animatori,
                                totalebambini=totale_bambini,
                                listmovimenti=listmovimenti)
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/formAggiungiAppello', methods=['GET', 'POST'])
+def form_aggiungi_appello():
+    if request.method == 'POST':
+        data = request.form['date']
+        database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = 1")
+        cursor = database.cursor()
+        if 'animatore' in session:
+            cursor.execute("SELECT Matricola FROM BAMBINO WHERE NomeSquadra = '" + session['nomeSquadra'] + "'")
+        elif 'responsabile' in session:
+            cursor.execute("SELECT Matricola FROM ANIMATORE WHERE MatrResponsabile = '" + session['matricola'] + "'")
+        rows = cursor.fetchall()
+
+        try:
+            for matricola in rows:
+                if request.form.get(matricola[0]) == "on":
+                    presente = 1;
+                else:
+                    presente = 0
+                cursor = database.cursor()
+                # inserisco appello se non già inserito
+                if 'animatore' in session:
+                    cursor.execute(
+                        "INSERT INTO APPELLOBAMBINO VALUES (?,?,?);",
+                        [matricola[0], data, presente])
+                elif 'responsabile' in session:
+                    cursor.execute(
+                        "INSERT INTO APPELLOANIMATORE VALUES (?,?,?);",
+                        [matricola[0], data, presente])
+                cursor.fetchall()
+
+            database.commit()
+        except:
+            flash("Attenzione: Appello già compilato!")
+        finally:
+            database.close()
+
+    if 'animatore' in session:
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+        cursor.execute("SELECT Matricola, Nome, Cognome FROM BAMBINO WHERE NomeSquadra = '" + session['nomeSquadra'] + "'")
+        rows = cursor.fetchall()
+        database.close()
+
+        return render_template("formAggiungiAppello.html", usernamesession=session['nome'] + " " + session
+                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                               cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
+                               indirizzo=session['indirizzo'],
+                               telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
+                                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader,
+                               totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini,
+                               bambini=rows,
+                               tipologia=session['nomeSquadra'])
+
+    elif 'responsabile' in session:
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+        cursor.execute(
+            "SELECT Matricola, Nome, Cognome FROM ANIMATORE WHERE MatrResponsabile = '" + session['matricola'] + "'")
+        rows = cursor.fetchall()
+        database.close()
+
+        return render_template("formAggiungiAppello.html", usernamesession=session['nome'] + " " + session
+                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                               cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
+                               indirizzo=session['indirizzo'],
+                               telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
+                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader,
+                               totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini,
+                               bambini=rows,
+                               tipologia="Animatori")
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/formMostraAppello', methods=['GET', 'POST'])
+def form_mostra_appello():
+    if request.method == 'POST':
+        data = request.form['date']
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+        if 'animatore' in session:
+            cursor.execute("SELECT A.IdBambino, B.Nome, B.Cognome, A.Presenza FROM BAMBINO B JOIN APPELLOBAMBINO A ON (A.IdBambino = B.Matricola) WHERE A.Data = '" + data + "'")
+            tipologia = session['nomeSquadra']
+        elif 'responsabile' in session:
+            cursor.execute( "SELECT A.IdAnimatore, B.Nome, B.Cognome, A.Presenza FROM ANIMATORE B JOIN APPELLOANIMATORE A ON (A.IdAnimatore = B.Matricola) WHERE B.MatrResponsabile = '" + session['matricola'] + "' AND A.Data = '" + data +"'")
+            tipologia = "Animatori"
+        rows = cursor.fetchall()
+        database.close()
+        return render_template("formMostraAppello.html", usernamesession=session['nome'] + " " + session
+                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                               cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
+                               indirizzo=session['indirizzo'],
+                               telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
+                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader,
+                               totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini,
+                               bambini=rows,
+                               tipologia=tipologia)
+
+    if 'animatore' in session:
+        return render_template("formMostraAppello.html", usernamesession=session['nome'] + " " + session
+                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                               cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
+                               indirizzo=session['indirizzo'],
+                               telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
+                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader,
+                               totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini,
+                               tipologia=session['nomeSquadra'])
+
+    elif 'responsabile' in session:
+        return render_template("formMostraAppello.html", usernamesession=session['nome'] + " " + session
+                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                               cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
+                               indirizzo=session['indirizzo'],
+                               telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
+                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader,
+                               totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini,
+                               tipologia="Animatori"
+                               )
     else:
         return redirect(url_for('login'))
 

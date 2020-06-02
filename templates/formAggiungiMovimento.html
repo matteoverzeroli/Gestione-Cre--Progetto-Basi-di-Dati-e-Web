@@ -120,73 +120,84 @@
             <h2>Inserisci Movimento</h2>
             <form method="post" id="segretariaForm">
                 <div class="form-group">
+
+                    {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                    <ul class=flashes>
+                        {% for message in messages %}
+                        <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    {% endwith %}
+
                     <label for="tipoEvento">Seleziona Evento</label>
                     <select class="form-control" name="tipoEvento" id="tipoEvento" required>
                         <option selected value="">Scegli...</option>
                         {% for laboratorio in listeventi %}
                         {% if laboratorio[0] == "201" %}
-                        <option>Cucina &nbsp; {{ laboratorio [1] }} &nbsp;{{ laboratorio
-                            [2] }} &nbsp;{{ laboratorio [3] }} &nbsp;{{ laboratorio [4] }}
+                        <option>Cucina, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
+                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
                         </option>
                         {% elif laboratorio[0] == "202" %}
-                        <option>Pittura &nbsp; {{ laboratorio [1] }} &nbsp;{{ laboratorio
-                            [2] }} &nbsp;{{ laboratorio [3] }} &nbsp;{{ laboratorio [4] }}
+                        <option>Pittura, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
+                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
                         </option>
                         {% elif laboratorio[0] == "203" %}
-                        <option>Circo &nbsp; {{ laboratorio [1] }} &nbsp;{{ laboratorio
-                            [2] }} &nbsp;{{ laboratorio [3] }} &nbsp;{{ laboratorio [4] }}
+                        <option>Circo, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
+                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
                         </option>
                         {% elif laboratorio[0] == "204" %}
-                        <option>Compiti &nbsp; {{ laboratorio [1] }} &nbsp;{{ laboratorio
-                            [2] }} &nbsp;{{ laboratorio [3] }} &nbsp;{{ laboratorio [4] }}
+                        <option>Compiti, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
+                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
                         </option>
                         {% elif laboratorio[0] == "205" %}
-                        <option>Musica &nbsp; {{ laboratorio [1] }} &nbsp;{{ laboratorio
-                            [2] }} &nbsp;{{ laboratorio [3] }} &nbsp;{{ laboratorio [4] }}
+                        <option>Musica, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
+                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
                         </option>
                         {% elif laboratorio[0] == "206" %}
-                        <option>Altro Laboratorio &nbsp; {{ laboratorio [1] }} &nbsp;{{ laboratorio
-                            [2] }} &nbsp;{{ laboratorio [3] }} &nbsp;{{ laboratorio [4] }}
+                        <option>Altro Laboratorio, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
+                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
                         </option>
                          {% elif laboratorio[0] == "101" %}
-                        <option>Calcio &nbsp; {{ laboratorio [1] }} &nbsp;{{ laboratorio
-                            [2] }} &nbsp;{{ laboratorio [3] }} &nbsp;{{ laboratorio [4] }}
+                        <option>Calcio, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
+                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
                         </option>
                         {% elif laboratorio[0] == "102" %}
-                        <option>Pallavolo &nbsp; {{ laboratorio [1] }} &nbsp;{{ laboratorio
-                            [2] }} &nbsp;{{ laboratorio [3] }} &nbsp;{{ laboratorio [4] }}
+                        <option>Pallavolo, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
+                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
                         </option>
                         {% elif laboratorio[0] == "103" %}
-                        <option>Palla Prigioniera &nbsp; {{ laboratorio [1] }} &nbsp;{{ laboratorio
-                            [2] }} &nbsp;{{ laboratorio [3] }} &nbsp;{{ laboratorio [4] }}
+                        <option>Palla Prigioniera, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
+                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
                         </option>
                         {% elif laboratorio[0] == "104" %}
-                        <option>Caccia al tesoro &nbsp; {{ laboratorio [1] }} &nbsp;{{ laboratorio
-                            [2] }} &nbsp;{{ laboratorio [3] }} &nbsp;{{ laboratorio [4] }}
+                        <option>Caccia al tesoro, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
+                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
                         </option>
                         {% elif laboratorio[0] == "105" %}
-                        <option>Altro gioco &nbsp; {{ laboratorio [1] }} &nbsp;{{ laboratorio
-                            [2] }} &nbsp;{{ laboratorio [3] }} &nbsp;{{ laboratorio [4] }}
+                        <option>Altro gioco, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
+                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
                         </option>
                         {% elif laboratorio[0] == "1" %}
-                        <option>Gita in montagna &nbsp; {{ laboratorio [1] }} &nbsp;{{ laboratorio
-                            [2] }} &nbsp;{{ laboratorio [3] }} &nbsp;{{ laboratorio [4] }}
+                        <option>Gita in montagna, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
+                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
                         </option>
                          {% elif laboratorio[0] == "2" %}
-                        <option>Gita al mare &nbsp; {{ laboratorio [1] }} &nbsp;{{ laboratorio
-                            [2] }} &nbsp;{{ laboratorio [3] }} &nbsp;{{ laboratorio [4] }}
+                        <option>Gita al mare, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
+                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
                         </option>
                         {% elif laboratorio[0] == "3" %}
-                        <option>Gita al lago &nbsp; {{ laboratorio [1] }} &nbsp;{{ laboratorio
-                            [2] }} &nbsp;{{ laboratorio [3] }} &nbsp;{{ laboratorio [4] }}
+                        <option>Gita al lago, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
+                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
                         </option>
                         {% elif laboratorio[0] == "4" %}
-                        <option>Gita culturale &nbsp; {{ laboratorio [1] }} &nbsp;{{ laboratorio
-                            [2] }} &nbsp;{{ laboratorio [3] }} &nbsp;{{ laboratorio [4] }}
+                        <option>Gita culturale, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
+                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
                         </option>
                         {% elif laboratorio[0] == "5" %}
-                        <option>Altra gita &nbsp; {{ laboratorio [1] }} &nbsp;{{ laboratorio
-                            [2] }} &nbsp;{{ laboratorio [3] }} &nbsp;{{ laboratorio [4] }}
+                        <option>Altra gita, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
+                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
                         </option>
                         {% endif %}
                         {% endfor %}
