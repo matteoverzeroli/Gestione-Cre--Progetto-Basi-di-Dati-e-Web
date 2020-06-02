@@ -344,7 +344,9 @@ def home_leader():
         database = sqlite3.connect(path)
         cursor = database.cursor()
 
-        cursor.execute("SELECT TipoEvento, Luogo, Data, Ora, Descrizione FROM EVENTO ORDER BY Data ASC, Ora ASC")
+        cursor.execute(
+            "SELECT TipoEvento, Luogo, Data, Ora, Descrizione FROM EVENTO WHERE MatrLeader = ? ORDER BY Data ASC, Ora ASC",
+            [session['matricola']])
         rows = cursor.fetchall()
         database.close()
         return render_template("homeLEADER.html", usernamesession=session['nome'] + " " + session
@@ -450,6 +452,14 @@ def home_responsabile():
 
         cursor.execute("SELECT TipoEvento, Luogo, Data, Ora, Descrizione FROM EVENTO ORDER BY Data ASC, Ora ASC")
         rows = cursor.fetchall()
+
+        cursor = database.cursor()
+
+        cursor.execute(
+            "SELECT E.TipoEvento, E.Luogo, E.Data, E.Ora, E.Descrizione FROM ARBITRA A JOIN EVENTO E ON (E.TipoEvento, E.Luogo, E.Data, E.Ora)=(A.TipoEvento, A.Luogo, A.Data, A.Ora) WHERE A.MatrResponsabile = ? ORDER BY E.Data ASC, E.Ora ASC",
+            [session['matricola']])
+        listgiochi = cursor.fetchall()
+
         database.close()
         return render_template("homeRESPONSABILE.html", usernamesession=session['nome'] + " " + session
         ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
@@ -463,7 +473,7 @@ def home_responsabile():
                                totaleanimatori=totale_animatori,
                                totalebambini=totale_bambini,
                                listeventi=rows,
-                               tipologia="Animatori")
+                               tipologia="Animatori", listgiochi=listgiochi)
     else:
         return redirect(url_for('login'))
 
@@ -1002,6 +1012,8 @@ def form_crea_laboratorio():
         date = request.form['date']
         time = request.form['time']
         descrizione = request.form['descrizione']
+        if str(request.form['nomeesterno']) != "":
+            esterno = str(request.form['nomeesterno']).split()[0].lstrip()
 
         database = sqlite3.connect(path)
         database.execute("PRAGMA foreign_keys = 1")
@@ -1012,6 +1024,10 @@ def form_crea_laboratorio():
             cursor.execute(
                 "INSERT INTO EVENTO VALUES (?,?,?,?,?,?,?);",
                 [tipoLab, luogo, date, time, descrizione, 'NULL', session['matricola']])
+            if str(request.form['nomeesterno']) != "":
+                cursor.execute(
+                    "INSERT INTO GESTISCE(MatrEsterno,TipoEvento,Luogo,Data, Ora) VALUES (?,?,?,?,?);",
+                    [esterno, tipoLab, luogo, date, time])
 
             cursor.fetchall()
             database.commit()
@@ -1021,13 +1037,21 @@ def form_crea_laboratorio():
             database.close()
 
     if 'leader' in session:
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+
+        cursor.execute(
+            "SELECT Matricola,Nome,Cognome FROM PERSONALE WHERE Ruolo = 'esterno'")
+        listesterni = cursor.fetchall()
+
+        database.close()
         return render_template("formCreaLaboratorio.html", usernamesession=session['nome'] + " " + session
         ['cognome'], totalepartecipanti=(
                 totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader, totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
                                totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
-                               totalebambini=totale_bambini)
+                               totalebambini=totale_bambini, listesterni=listesterni)
     else:
         return redirect(url_for('login'))
 
@@ -1071,6 +1095,41 @@ def form_crea_squadra():
         return redirect(url_for('login'))
 
 
+def set_id_evento(tipoEvento):
+    if str(tipoEvento).split(",")[0].__contains__("Cucina"):
+        return "201"
+    elif str(tipoEvento).split(",")[0].__contains__("Pittura"):
+        return "202"
+    elif str(tipoEvento).split(",")[0].__contains__("Circo"):
+        return "203"
+    elif str(tipoEvento).split(",")[0].__contains__("Compiti"):
+        return "204"
+    elif str(tipoEvento).split(",")[0].__contains__("Musica"):
+        return "205"
+    elif str(tipoEvento).split(",")[0].__contains__("Altro Laboratorio"):
+        return "206"
+    elif str(tipoEvento).split(",")[0].__contains__("Calcio"):
+        return "101"
+    elif str(tipoEvento).split(",")[0].__contains__("Pallavolo"):
+        return "102"
+    elif str(tipoEvento).split(",")[0].__contains__("Palla Prigioniera"):
+        return "103"
+    elif str(tipoEvento).split(",")[0].__contains__("Caccia al tesoro"):
+        return "104"
+    elif str(tipoEvento).split(",")[0].__contains__("Altro gioco"):
+        return "105"
+    elif str(tipoEvento).split(",")[0].__contains__("Gita in montagna"):
+        return "1"
+    elif str(tipoEvento).split(",")[0].__contains__("Gita al mare"):
+        return "2"
+    elif str(tipoEvento).split(",")[0].__contains__("Gita al lago"):
+        return "3"
+    elif str(tipoEvento).split(",")[0].__contains__("Gita culturale"):
+        return "4"
+    elif str(tipoEvento).split(",")[0].__contains__("Altra Gita"):
+        return "5"
+
+
 @app.route('/formAggiungiMovimento', methods=['GET', 'POST'])
 def form_aggiungi_movimento():
     if request.method == 'POST':
@@ -1082,63 +1141,22 @@ def form_aggiungi_movimento():
         else:
             inout = 0
 
-        print(str(tipoEvento).split(",")[0])
-        if str(tipoEvento).split(",")[0].__contains__("Cucina"):
-            idEvento = "201"
-        elif str(tipoEvento).split(",")[0].__contains__("Pittura"):
-            idEvento = "202"
-        elif str(tipoEvento).split(",")[0].__contains__("Circo"):
-            idEvento = "203"
-        elif str(tipoEvento).split(",")[0].__contains__("Compiti"):
-            idEvento = "204"
-        elif str(tipoEvento).split(",")[0].__contains__("Musica"):
-            idEvento = "205"
-        elif str(tipoEvento).split(",")[0].__contains__("Altro Laboratorio"):
-            idEvento = "206"
-        elif str(tipoEvento).split(",")[0].__contains__("Calcio"):
-            idEvento = "101"
-        elif str(tipoEvento).split(",")[0].__contains__("Pallavolo"):
-            idEvento = "102"
-        elif str(tipoEvento).split(",")[0].__contains__("Palla Prigioniera"):
-            idEvento = "103"
-        elif str(tipoEvento).split(",")[0].__contains__("Caccia al tesoro"):
-            idEvento = "104"
-        elif str(tipoEvento).split(",")[0].__contains__("Altro gioco"):
-            idEvento = "105"
-        elif str(tipoEvento).split(",")[0].__contains__("Gita in montagna"):
-            idEvento = "1"
-        elif str(tipoEvento).split(",")[0].__contains__("Gita al mare"):
-            idEvento = "2"
-        elif str(tipoEvento).split(",")[0].__contains__("Gita al lago"):
-            idEvento = "3"
-        elif str(tipoEvento).split(",")[0].__contains__("Gita culturale"):
-            idEvento = "4"
-        elif str(tipoEvento).split(",")[0].__contains__("Altra Gita"):
-            idEvento = "5"
+        idEvento = set_id_evento(tipoEvento)
 
         database = sqlite3.connect(path)
         database.execute("PRAGMA foreign_keys = 1")
 
         cursor = database.cursor()
 
-        print("Prova: " + str(tipoEvento).split(",")[1].replace(",", "").replace(" ", "") + idEvento)
         try:
             cursor.execute(
                 "INSERT INTO MOVIMENTO(TipoEvento,Luogo,Data, Ora, Descrizione, Valore, Inout, MatrSegretaria) VALUES (?,?,?,?,?,?,?,?);",
-                [idEvento, str(tipoEvento).split(",")[1].replace(",", "").replace(" ", ""), str(tipoEvento).split(",")[2].replace(",", "").replace(" ", ""), str(tipoEvento).split(",")[3].replace(",", "").replace(" ", ""),
+                [idEvento, str(tipoEvento).split(",")[1].lstrip(), str(tipoEvento).split(",")[2].lstrip(),
+                 str(tipoEvento).split(",")[3].lstrip(),
                  descrizione, abs(float(valore)), inout, session['matricola']])
-            #cursor.execute(
-            #    "INSERT INTO MOVIMENTO(TipoEvento,Luogo,Data, Ora, Descrizione, Valore, Inout, MatrSegretaria) VALUES (?,?,?,?,?,?,?,?);",
-            #    [idEvento, str(tipoEvento).split()[1].replace(",", "").replace(" ", ""),
-            #     str(tipoEvento).split()[2].replace(",", "").replace(" ", ""),
-            #     str(tipoEvento).split()[3].replace(",", "").replace(" ", ""),
-            #     descrizione, abs(float(valore)), inout, session['matricola']])
-
-            cursor.fetchall()
 
             database.commit()
-        except sqlite3.Error as er:
-            print(er)
+        except:
             flash("Attenzione: Errore!")
         finally:
             database.close()
@@ -1169,7 +1187,8 @@ def tabella_movimenti():
     if 'segretaria' in session:
         database = sqlite3.connect(path)
         cursor = database.cursor()
-        cursor.execute("SELECT TipoEvento, Luogo, Data, Ora, Descrizione,Valore,InOut,MatrSegretaria FROM MOVIMENTO ORDER BY Data ASC, Ora ASC")
+        cursor.execute(
+            "SELECT TipoEvento, Luogo, Data, Ora, Descrizione,Valore,InOut,MatrSegretaria FROM MOVIMENTO ORDER BY Data ASC, Ora ASC")
         listmovimenti = cursor.fetchall()
         database.close()
         return render_template("tabellaMovimenti.html", usernamesession=session['nome'] + " " + session
@@ -1182,6 +1201,61 @@ def tabella_movimenti():
                                totaleanimatori=totale_animatori,
                                totalebambini=totale_bambini,
                                listmovimenti=listmovimenti)
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/formAssegnaArbitraggio', methods=['GET', 'POST'])
+def assegna_arbitraggio():
+    if request.method == 'POST':
+        giocoselezionato = request.form['nomegioco']
+        responsabileselezionato = str(request.form['nomeresponsabile']).split()[0].lstrip()
+
+        idEvento = set_id_evento(str(giocoselezionato).split()[0])
+
+        database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = 1")
+
+        cursor = database.cursor()
+        try:
+            cursor.execute(
+                "INSERT INTO ARBITRA(MatrResponsabile,TipoEvento,Luogo,Data, Ora) VALUES (?,?,?,?,?);",
+                [responsabileselezionato, idEvento, str(giocoselezionato).split()[1].lstrip(),
+                 str(giocoselezionato).split()[2].lstrip(), str(giocoselezionato).split()[3].lstrip()])
+
+            database.commit()
+        except Exception as e:
+            flash("Attenzione: Arbitraggio già inserito!")
+            print(e)
+        finally:
+            database.close()
+
+    if 'leader' in session:
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+        cursor.execute(
+            "SELECT TipoEvento, Luogo, Data, Ora, Descrizione FROM EVENTO WHERE MatrLeader = ? and TipoEvento > '100' and TipoEvento < '201' ORDER BY Data ASC, Ora ASC",
+            [session['matricola']])
+        listgiochi = cursor.fetchall()
+
+        cursor = database.cursor()
+        cursor.execute(
+            "SELECT Matricola,Nome,Cognome FROM PERSONALE WHERE Ruolo = 'responsabile'")
+        listresponsabili = cursor.fetchall()
+
+        database.close()
+
+        return render_template("formAssegnaArbitraggio.html", usernamesession=session['nome'] + " " + session
+        ['cognome'], totalepartecipanti=(
+                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader,
+                               totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini,
+                               listresponsabili=listresponsabili,
+                               listgiochi=listgiochi)
     else:
         return redirect(url_for('login'))
 
@@ -1219,23 +1293,24 @@ def form_aggiungi_appello():
 
             database.commit()
         except:
-            flash("Attenzione: Appello già compilato!")
+            flash("Attenzione: Appello già compilato per questa giornata!")
         finally:
             database.close()
 
     if 'animatore' in session:
         database = sqlite3.connect(path)
         cursor = database.cursor()
-        cursor.execute("SELECT Matricola, Nome, Cognome FROM BAMBINO WHERE NomeSquadra = '" + session['nomeSquadra'] + "'")
+        cursor.execute(
+            "SELECT Matricola, Nome, Cognome FROM BAMBINO WHERE NomeSquadra = '" + session['nomeSquadra'] + "'")
         rows = cursor.fetchall()
         database.close()
 
         return render_template("formAggiungiAppello.html", usernamesession=session['nome'] + " " + session
-                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
                                indirizzo=session['indirizzo'],
                                telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
-                                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader,
                                totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
@@ -1254,11 +1329,11 @@ def form_aggiungi_appello():
         database.close()
 
         return render_template("formAggiungiAppello.html", usernamesession=session['nome'] + " " + session
-                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
                                indirizzo=session['indirizzo'],
                                telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
-                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader,
                                totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
@@ -1278,19 +1353,22 @@ def form_mostra_appello():
         database = sqlite3.connect(path)
         cursor = database.cursor()
         if 'animatore' in session:
-            cursor.execute("SELECT A.IdBambino, B.Nome, B.Cognome, A.Presenza FROM BAMBINO B JOIN APPELLOBAMBINO A ON (A.IdBambino = B.Matricola) WHERE A.Data = '" + data + "'")
+            cursor.execute(
+                "SELECT A.IdBambino, B.Nome, B.Cognome, A.Presenza FROM BAMBINO B JOIN APPELLOBAMBINO A ON (A.IdBambino = B.Matricola) WHERE A.Data = '" + data + "'")
             tipologia = session['nomeSquadra']
         elif 'responsabile' in session:
-            cursor.execute( "SELECT A.IdAnimatore, B.Nome, B.Cognome, A.Presenza FROM ANIMATORE B JOIN APPELLOANIMATORE A ON (A.IdAnimatore = B.Matricola) WHERE B.MatrResponsabile = '" + session['matricola'] + "' AND A.Data = '" + data +"'")
+            cursor.execute(
+                "SELECT A.IdAnimatore, B.Nome, B.Cognome, A.Presenza FROM ANIMATORE B JOIN APPELLOANIMATORE A ON (A.IdAnimatore = B.Matricola) WHERE B.MatrResponsabile = '" +
+                session['matricola'] + "' AND A.Data = '" + data + "'")
             tipologia = "Animatori"
         rows = cursor.fetchall()
         database.close()
         return render_template("formMostraAppello.html", usernamesession=session['nome'] + " " + session
-                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
                                indirizzo=session['indirizzo'],
                                telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
-                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader,
                                totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
@@ -1302,11 +1380,11 @@ def form_mostra_appello():
 
     if 'animatore' in session:
         return render_template("formMostraAppello.html", usernamesession=session['nome'] + " " + session
-                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
                                indirizzo=session['indirizzo'],
                                telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
-                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader,
                                totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
@@ -1317,11 +1395,11 @@ def form_mostra_appello():
 
     elif 'responsabile' in session:
         return render_template("formMostraAppello.html", usernamesession=session['nome'] + " " + session
-                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
                                indirizzo=session['indirizzo'],
                                telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
-                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader,
                                totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
@@ -1334,4 +1412,4 @@ def form_mostra_appello():
         return redirect(url_for('login'))
 
 
-app.run(host="127.0.0.1", port=5000, debug='true')
+app.run(host="127.0.0.1", port=5000)

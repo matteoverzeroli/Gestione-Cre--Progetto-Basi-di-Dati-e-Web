@@ -134,70 +134,70 @@
                     <label for="tipoEvento">Seleziona Evento</label>
                     <select class="form-control" name="tipoEvento" id="tipoEvento" required>
                         <option selected value="">Scegli...</option>
-                        {% for laboratorio in listeventi %}
-                        {% if laboratorio[0] == "201" %}
-                        <option>Cucina, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
-                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
+                        {% for evento in listeventi %}
+                        {% if evento[0] == "201" %}
+                        <option>Cucina, &nbsp; {{ evento [1] }}, &nbsp;{{ evento
+                            [2] }}, &nbsp;{{ evento [3] }}, &nbsp;{{ evento [4] }}
                         </option>
-                        {% elif laboratorio[0] == "202" %}
-                        <option>Pittura, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
-                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
+                        {% elif evento[0] == "202" %}
+                        <option>Pittura, &nbsp; {{ evento [1] }}, &nbsp;{{ evento
+                            [2] }}, &nbsp;{{ evento [3] }}, &nbsp;{{ evento [4] }}
                         </option>
-                        {% elif laboratorio[0] == "203" %}
-                        <option>Circo, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
-                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
+                        {% elif evento[0] == "203" %}
+                        <option>Circo, &nbsp; {{ evento [1] }}, &nbsp;{{ evento
+                            [2] }}, &nbsp;{{ evento [3] }}, &nbsp;{{ evento [4] }}
                         </option>
-                        {% elif laboratorio[0] == "204" %}
-                        <option>Compiti, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
-                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
+                        {% elif evento[0] == "204" %}
+                        <option>Compiti, &nbsp; {{ evento [1] }}, &nbsp;{{ evento
+                            [2] }}, &nbsp;{{ evento [3] }}, &nbsp;{{ evento [4] }}
                         </option>
-                        {% elif laboratorio[0] == "205" %}
-                        <option>Musica, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
-                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
+                        {% elif evento[0] == "205" %}
+                        <option>Musica, &nbsp; {{ evento [1] }}, &nbsp;{{ evento
+                            [2] }}, &nbsp;{{ evento [3] }}, &nbsp;{{ evento [4] }}
                         </option>
-                        {% elif laboratorio[0] == "206" %}
-                        <option>Altro Laboratorio, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
-                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
+                        {% elif evento[0] == "206" %}
+                        <option>Altro evento, &nbsp; {{ evento [1] }}, &nbsp;{{ evento
+                            [2] }}, &nbsp;{{ evento [3] }}, &nbsp;{{ evento [4] }}
                         </option>
-                         {% elif laboratorio[0] == "101" %}
-                        <option>Calcio, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
-                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
+                        {% elif evento[0] == "101" %}
+                        <option>Calcio, &nbsp; {{ evento [1] }}, &nbsp;{{ evento
+                            [2] }}, &nbsp;{{ evento [3] }}, &nbsp;{{ evento [4] }}
                         </option>
-                        {% elif laboratorio[0] == "102" %}
-                        <option>Pallavolo, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
-                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
+                        {% elif evento[0] == "102" %}
+                        <option>Pallavolo, &nbsp; {{ evento [1] }}, &nbsp;{{ evento
+                            [2] }}, &nbsp;{{ evento [3] }}, &nbsp;{{ v [4] }}
                         </option>
-                        {% elif laboratorio[0] == "103" %}
-                        <option>Palla Prigioniera, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
-                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
+                        {% elif evento[0] == "103" %}
+                        <option>Palla Prigioniera, &nbsp; {{ evento [1] }}, &nbsp;{{ evento
+                            [2] }}, &nbsp;{{ evento [3] }}, &nbsp;{{ evento [4] }}
                         </option>
-                        {% elif laboratorio[0] == "104" %}
-                        <option>Caccia al tesoro, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
-                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
+                        {% elif evento[0] == "104" %}
+                        <option>Caccia al tesoro, &nbsp; {{ evento [1] }}, &nbsp;{{ evento
+                            [2] }}, &nbsp;{{ evento [3] }}, &nbsp;{{ evento [4] }}
                         </option>
-                        {% elif laboratorio[0] == "105" %}
-                        <option>Altro gioco, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
-                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
+                        {% elif evento[0] == "105" %}
+                        <option>Altro gioco, &nbsp; {{ evento [1] }}, &nbsp;{{ evento
+                            [2] }}, &nbsp;{{ evento [3] }}, &nbsp;{{ evento [4] }}
                         </option>
-                        {% elif laboratorio[0] == "1" %}
-                        <option>Gita in montagna, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
-                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
+                        {% elif evento[0] == "1" %}
+                        <option>Gita in montagna, &nbsp; {{ evento [1] }}, &nbsp;{{ evento
+                            [2] }}, &nbsp;{{ evento [3] }}, &nbsp;{{ evento [4] }}
                         </option>
-                         {% elif laboratorio[0] == "2" %}
-                        <option>Gita al mare, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
-                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
+                        {% elif evento[0] == "2" %}
+                        <option>Gita al mare, &nbsp; {{ evento [1] }}, &nbsp;{{ evento
+                            [2] }}, &nbsp;{{ evento [3] }}, &nbsp;{{ evento [4] }}
                         </option>
-                        {% elif laboratorio[0] == "3" %}
-                        <option>Gita al lago, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
-                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
+                        {% elif evento[0] == "3" %}
+                        <option>Gita al lago, &nbsp; {{ evento [1] }}, &nbsp;{{ evento
+                            [2] }}, &nbsp;{{ evento [3] }}, &nbsp;{{ evento [4] }}
                         </option>
-                        {% elif laboratorio[0] == "4" %}
-                        <option>Gita culturale, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
-                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
+                        {% elif evento[0] == "4" %}
+                        <option>Gita culturale, &nbsp; {{ evento [1] }}, &nbsp;{{ evento
+                            [2] }}, &nbsp;{{ evento [3] }}, &nbsp;{{ evento [4] }}
                         </option>
-                        {% elif laboratorio[0] == "5" %}
-                        <option>Altra gita, &nbsp; {{ laboratorio [1] }}, &nbsp;{{ laboratorio
-                            [2] }}, &nbsp;{{ laboratorio [3] }}, &nbsp;{{ laboratorio [4] }}
+                        {% elif evento[0] == "5" %}
+                        <option>Altra gita, &nbsp; {{ evento [1] }}, &nbsp;{{ evento
+                            [2] }}, &nbsp;{{ evento [3] }}, &nbsp;{{ evento [4] }}
                         </option>
                         {% endif %}
                         {% endfor %}

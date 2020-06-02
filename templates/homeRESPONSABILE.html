@@ -253,6 +253,44 @@
                     </tbody>
                 </table>
             </div>
+            <br>
+            <h2>GIOCHI DA ARBITRARE</h2>
+            <div class="table-responsive">
+                <table class="table table-striped table-sm">
+                   <thead>
+                    <tr>
+                        <th>Tipo Evento</th>
+                        <th>Luogo</th>
+                        <th>Data</th>
+                        <th>Ora</th>
+                        <th>Descrizione</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for evento in listgiochi%}
+                    <tr>
+                        {% if evento[0] == "101" %}
+                        <td>Calcio</td>
+                        {% elif evento[0] == "102" %}
+                        <td>Pallavolo</td>
+                        {% elif evento[0] == "103" %}
+                        <td>Palla Prigioniera</td>
+                        {% elif evento[0] == "104" %}
+                        <td>Caccia al Tesoro</td>
+                        {% elif evento[0] == "105" %}
+                        <td>Altro Gioco</td>
+                        {% endif %}
+
+                        <td>{{ evento[1] }}</td>
+                        <td>{{ evento[2] }}</td>
+                        <td>{{ evento[3] }}</td>
+                        <td>{{ evento[4] }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </main>
     </div>
 </div>

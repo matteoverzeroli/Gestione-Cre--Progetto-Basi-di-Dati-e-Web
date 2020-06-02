@@ -148,6 +148,18 @@
                             Crea Laboratorio
                         </a>
                     </li>
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Assegna Arbitraggio</span>
+                        <a class="d-flex align-items-center text-muted" href="#" aria-label="Assegna Arbitraggio">
+                            <span data-feather="plus-circle"></span>
+                        </a>
+                    </h6>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/formAssegnaArbitraggio">
+                            <span data-feather="users"></span>
+                            Assegna Arbitraggio
+                        </a>
+                    </li>
                 </ul>
             </div>
         </nav>
@@ -234,6 +246,16 @@
                     <textarea class="form-control" name="descrizione" id="descrizione" rows="3" required
                               maxlength="50"></textarea>
                 </div>
+
+                <div class="form-group">
+                        <label for="esterno">Seleziona Esterno Responsabile</label>
+                        <select class="form-control" name="nomeesterno" id="esterno">
+                            <option selected value="">Scegli...</option>
+                            {% for nome in listesterni%}
+                            <option>{{ nome[0] }} &nbsp; {{ nome[1] }} &nbsp; {{ nome[2] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 <div class="float-right">
                     <input type="submit" class="btn btn-primary btn-lg mb-1" value="Crea Laboratorio">
                 </div>
