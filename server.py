@@ -1751,4 +1751,62 @@ def form_mostra_classifica():
     else:
         return redirect(url_for('login'))
 
+@app.route('/formMostraAppelloGita', methods=['GET', 'POST'])
+def form_mostra_appello_gita():
+    if request.method == 'POST':
+        tipoEvento = request.form['tipoEvento']
+        idEvento = set_id_evento(tipoEvento)
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+        cursor.execute("SELECT B.Matricola, B.Nome, B.Cognome, B.DataNascita, B.NumTelefono FROM BAMBINO B JOIN ISCRIZIONE I ON (B.Matricola) = (I.MatrBambino) WHERE I.TipoEvento ='" + idEvento + "' AND I.Luogo ='" + str(tipoEvento).split(",")[1].lstrip() + "' AND I.Data ='" + str(tipoEvento).split(",")[2].lstrip() + "' AND I.Ora ='" + str(tipoEvento).split(",")[3].lstrip() + "' AND B.NomeSquadra = '"+ session['nomeSquadra']+"'" )
+        listbimbi = cursor.fetchall()
+        cursor = database.cursor()
+        cursor.execute("SELECT TipoEvento, Luogo, Data, Ora FROM PARTECIPA  WHERE NomeSquadra ='" + session[
+            'nomeSquadra'] + "' AND TipoEvento > 0 AND TipoEvento < 100  ")
+        listgite = cursor.fetchall()
+        database.close()
+        print("EVENTO " + tipoEvento)
+        for bimbi in listbimbi:
+            print("Bimbo " + bimbi[0])
+        return render_template("formMostraAppelloGita.html", usernamesession=session['nome'] + " " + session
+                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                               cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
+                               indirizzo=session['indirizzo'],
+                               telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
+                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader,
+                               totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini,
+                               listbimbi=listbimbi,
+                               tipologia=session['nomeSquadra'],
+                               tipo="MostraTab",
+                               event=tipoEvento,
+                               listgite=listgite)
+    if 'animatore' in session:
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+        cursor.execute("SELECT TipoEvento, Luogo, Data, Ora FROM PARTECIPA  WHERE NomeSquadra ='"+ session['nomeSquadra'] + "' AND TipoEvento > 0 AND TipoEvento < 100  ")
+        listgite = cursor.fetchall()
+
+        database.close()
+        return render_template("formMostraAppelloGita.html", usernamesession=session['nome'] + " " + session
+                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                               cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
+                               indirizzo=session['indirizzo'],
+                               telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
+                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader,
+                               totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini,
+                               tipologia=session['nomeSquadra'],
+                               listgite=listgite)
+    else:
+        return redirect(url_for('login'))
+
 app.run(host="127.0.0.1", port=5000, debug="true")
