@@ -74,14 +74,14 @@
                         </a>
                     </h6>
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">
+                        <a class="nav-link " href="/homeBAMBINO">
                             <span data-feather="home"></span>
                             Home
                             <span class="sr-only">(current)</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/formInserisciIscrizioneGita">
+                        <a class="nav-link active" href="/formInserisciIscrizioneGita">
                             <span data-feather="file"></span>
                             Iscrizione Gita
                         </a>
@@ -119,128 +119,66 @@
                 </div>
             </div>
 
-            <h2>Dati Anagrafici</h2>
             <form method="post">
                 <div class="form-group">
-                    <label for="matricola">Matricola</label>
-                    <input type="text" class="form-control" name="matricola" id="matricola" value="{{matricola}}"
-                           readonly>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="text" name='password' class="form-control" id="password" value="{{password}}" required
-                           pattern="[a-zA-z0-9]{5}">
-                </div>
-                <div class="form-group">
-                    <label for="nome">Nome</label>
-                    <input type="text" name="nome" class="form-control" id="nome" value="{{nome}}" required
-                           maxlength="50">
-                </div>
-                <div class="form-group">
-                    <label for="cognome">Cognome</label>
-                    <input type="text" name="cognome" class="form-control" id="cognome" value="{{cognome}}" required
-                           maxlength="50">
-                </div>
-                <div class="form-group">
-                    <label for="email">E-Mail</label>
-                    <input type="email" name="email" class="form-control" id="email" value="{{email}}" required
-                           maxlength="50">
-                </div>
-                <div class="it-datepicker-wrapper">
+                    {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                    <ul class=flashes>
+                        {% for message in messages %}
+                        <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    {% endwith %}
+
                     <div class="form-group">
-                        <label for="date">Data di nascita</label>
-                        <input class="form-control it-date-datepicker" name="data" id="date" type="date"
-                               value="{{data}}" required>
+                        <label for="gita">Seleziona Gita</label>
+                        <select class="form-control" name="gita" id="gita">
+                            <option selected value="">Scegli...</option>
+                            {% for gita in listgite%}
+                            {% if gita[0] == "1" %}
+                            <option>Gita in Montagna, &nbsp; {{gita[1]}}, &nbsp; {{gita[2]}}, &nbsp; {{gita[3]}}, &nbsp;{{gita[4]}}
+                            </option>
+                            {% elif gita[0] == "2" %}
+                            <option>Gita al Mare, &nbsp; {{gita[1]}}, &nbsp; {{gita[2]}}, &nbsp; {{gita[3]}}, &nbsp;{{gita[4]}}
+                            </option>
+
+                            {% elif gita[0] == "3" %}
+                            <option>Gita al Lago , &nbsp; {{gita[1]}}, &nbsp; {{gita[2]}}, &nbsp; {{gita[3]}}, &nbsp;{{gita[4]}}
+                            </option>
+
+                            {% elif gita[0] == "4" %}
+                            <option>Gita Culturale, &nbsp; {{gita[1]}}, &nbsp; {{gita[2]}}, &nbsp; {{gita[3]}}, &nbsp;{{gita[4]}}
+                            </option>
+
+                            {% elif gita[0] == "5" %}
+                            <option>Altra Gita &nbsp; , &nbsp; {{gita[1]}}, &nbsp; {{gita[2]}}, &nbsp; {{gita[3]}},
+                                &nbsp;{{gita[4]}}
+                            </option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="it-datepicker-wrapper">
+                        <div class="form-group">
+                            <label for="dataiscrizione">Data Iscrizione</label>
+                            <input class="form-control it-date-datepicker" name="dataiscrizione" id="dataiscrizione"
+                                   type="date"
+                                   placeholder="gg/mm/aaaa"
+                                   required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="valore">Costo</label>
+                        <input type="number" name="costogita" class="form-control" id="valore" placeholder="1000" required>
+                    </div>
+
+                    <div class="float-right">
+                        <input type="submit" class="btn btn-primary btn-lg mb-1" name="iscrivimi"
+                               value="Iscrivimi">
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="indirizzo">Indirizzo</label>
-                    <input type="text" name="indirizzo" class="form-control" id="indirizzo" value="{{indirizzo}}"
-                           required maxlength="50">
-                </div>
-                <div class="form-group">
-                    <label for="telefono">Numero di telefono</label>
-                    <input type="number" name="telefono" class="form-control" id="telefono" value="{{telefono}}">
-                </div>
-                <div class="form-group">
-                    <label for="cellulare">Numero di cellulare</label>
-                    <input type="number" name="cellulare" class="form-control" id="cellulare" value="{{cellulare}}">
-                </div>
-                <div class="float-right">
-                    <input type="submit" name="form_modifica" class="btn btn-primary btn-lg mb-1" value="Modifica Dati">
-                </div>
-                <br>
-                <br>
-                <br>
             </form>
-
-            <form method="post">
-                <div class="float-right">
-                    <input type="submit" name="form_elimina" class="btn btn-primary btn-lg mb-1" name="Elimina" value="Elimina Dati">
-                </div>
-            </form>
-
-            <h2>EVENTI PROGRAMMATI</h2>
-            <div class="table-responsive">
-                <table class="table table-striped table-sm">
-                    <thead>
-                    <tr>
-                        <th>Tipo Evento</th>
-                        <th>Luogo</th>
-                        <th>Data</th>
-                        <th>Ora</th>
-                        <th>Descrizione</th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                    {% for evento in listeventi%}
-                    <tr>
-                        {% if evento[0] == "1" %}
-                        <td>Gita in Montagna</td>
-                        {% elif evento[0] == "2" %}
-                        <td>Gita al Mare</td>
-                        {% elif evento[0] == "3" %}
-                        <td>Gita al Lago</td>
-                        {% elif evento[0] == "4" %}
-                        <td>Gita Culturale</td>
-                        {% elif evento[0] == "5" %}
-                        <td>Altra Gita</td>
-
-                        {% elif evento[0] == "101" %}
-                        <td>Calcio</td>
-                        {% elif evento[0] == "102" %}
-                        <td>Pallavolo</td>
-                        {% elif evento[0] == "103" %}
-                        <td>Palla Prigioniera</td>
-                        {% elif evento[0] == "104" %}
-                        <td>Caccia al Tesoro</td>
-                        {% elif evento[0] == "105" %}
-                        <td>Altro Gioco</td>
-
-                        {% elif evento[0] == "201" %}
-                        <td>Cucina</td>
-                        {% elif evento[0] == "202" %}
-                        <td>Pittura</td>
-                        {% elif evento[0] == "203" %}
-                        <td>Circo</td>
-                        {% elif evento[0] == "204" %}
-                        <td>Compiti</td>
-                        {% elif evento[0] == "205" %}
-                        <td>Musica</td>
-                        {% elif evento[0] == "206" %}
-                        <td>Altro Laboratorio</td>
-                        {% endif %}
-
-                        <td>{{ evento[1] }}</td>
-                        <td>{{ evento[2] }}</td>
-                        <td>{{ evento[3] }}</td>
-                        <td>{{ evento[4] }}</td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
         </main>
     </div>
 </div>

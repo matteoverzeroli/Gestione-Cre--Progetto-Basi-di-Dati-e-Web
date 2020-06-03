@@ -152,10 +152,10 @@ database.execute("CREATE TABLE IF NOT EXISTS ISCRIZIONE("
                  "Data DATE NOT NULL,"
                  "Ora TIME NOT NULL,"
                  "Costo FLOAT NOT NULL,"
-                 "Scadenza DATE NOT NULL,"
+                 "DataIscrizione DATE NOT NULL,"
                  "PRIMARY KEY (MatrBambino,TipoEvento,Luogo,Data,Ora),"
                  "FOREIGN KEY (TipoEvento,Luogo,Data,Ora) "
-                 "REFERENCES EVENTO(TipoEvento,Lugo,Data,Ora));")
+                 "REFERENCES EVENTO(TipoEvento,Luogo,Data,Ora));")
 
 database.execute("CREATE TABLE IF NOT EXISTS PARTECIPA("
                  "NomeSquadra VARCHAR(10) REFERENCES SQUADRA(Nome),"
@@ -364,7 +364,7 @@ def home_leader():
         cursor.execute(
             "SELECT TipoEvento, Luogo, Data, Ora, Descrizione FROM EVENTO WHERE MatrLeader = ? ORDER BY Data ASC, Ora ASC",
             [session['matricola']])
-        rows = cursor.fetchall()
+        listeventi = cursor.fetchall()
         database.close()
         return render_template("homeLEADER.html", usernamesession=session['nome'] + " " + session
         ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
@@ -378,7 +378,7 @@ def home_leader():
                                totaleesterni=totale_esterni,
                                totaleanimatori=totale_animatori,
                                totalebambini=totale_bambini,
-                               listeventi=rows)
+                               listeventi=listeventi)
     else:
         return redirect(url_for('login'))
 
@@ -1263,6 +1263,7 @@ def form_crea_squadra():
 
 
 def set_id_evento(tipoEvento):
+
     if str(tipoEvento).split(",")[0].__contains__("Cucina"):
         return "201"
     elif str(tipoEvento).split(",")[0].__contains__("Pittura"):
@@ -1281,17 +1282,17 @@ def set_id_evento(tipoEvento):
         return "102"
     elif str(tipoEvento).split(",")[0].__contains__("Palla Prigioniera"):
         return "103"
-    elif str(tipoEvento).split(",")[0].__contains__("Caccia al tesoro"):
+    elif str(tipoEvento).split(",")[0].__contains__("Caccia al Tesoro"):
         return "104"
-    elif str(tipoEvento).split(",")[0].__contains__("Altro gioco"):
+    elif str(tipoEvento).split(",")[0].__contains__("Altro Gioco"):
         return "105"
-    elif str(tipoEvento).split(",")[0].__contains__("Gita in montagna"):
+    elif str(tipoEvento).split(",")[0].__contains__("Gita in Montagna"):
         return "1"
-    elif str(tipoEvento).split(",")[0].__contains__("Gita al mare"):
+    elif str(tipoEvento).split(",")[0].__contains__("Gita al Mare"):
         return "2"
-    elif str(tipoEvento).split(",")[0].__contains__("Gita al lago"):
+    elif str(tipoEvento).split(",")[0].__contains__("Gita al Lago"):
         return "3"
-    elif str(tipoEvento).split(",")[0].__contains__("Gita culturale"):
+    elif str(tipoEvento).split(",")[0].__contains__("Gita Culturale"):
         return "4"
     elif str(tipoEvento).split(",")[0].__contains__("Altra Gita"):
         return "5"
@@ -1401,7 +1402,7 @@ def assegna_arbitraggio():
         database = sqlite3.connect(path)
         cursor = database.cursor()
         cursor.execute(
-            "SELECT TipoEvento, Luogo, Data, Ora, Descrizione FROM EVENTO WHERE MatrLeader = ? and TipoEvento > '100' and TipoEvento < '201' ORDER BY Data ASC, Ora ASC",
+            "SELECT TipoEvento, Luogo, Data, Ora, Descrizione FROM EVENTO WHERE MatrLeader = ? and CAST(TipoEvento as INTEGER) > 100 and CAST(TipoEvento as INTEGER)  < 201 ORDER BY Data ASC, Ora ASC",
             [session['matricola']])
         listgiochi = cursor.fetchall()
 
@@ -1599,5 +1600,60 @@ def form_mostra_appello():
     else:
         return redirect(url_for('login'))
 
+@app.route('/formInserisciIscrizioneGita', methods=['GET', 'POST'])
+def form_iscrizione_gita():
+    if request.method == 'POST':
+        tipoEvento = request.form.get('gita')
+
+        idEvento =set_id_evento(tipoEvento)
+        costo = request.form.get('costogita')
+        dataiscrizione = request.form.get('dataiscrizione')
+
+
+        database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = 1")
+
+        cursor = database.cursor()
+
+        try:
+            cursor.execute(
+                "INSERT INTO ISCRIZIONE(MatrBambino,TipoEvento,Luogo,Data, Ora, Costo,DataIscrizione) VALUES (?,?,?,?,?,?,?);",
+                [session['matricola'],idEvento, str(tipoEvento).split(",")[1].lstrip(), str(tipoEvento).split(",")[2].lstrip(),
+                 str(tipoEvento).split(",")[3].lstrip(),costo,dataiscrizione])
+
+            database.commit()
+        except Exception as e :
+            flash("Attenzione: Errore! Iscrizione già inserita")
+        finally:
+            database.close()
+
+
+    if 'bambino' in session:
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+
+        cursor.execute("SELECT E.TipoEvento, E.Luogo, E.Data, E.Ora, E.Descrizione FROM EVENTO E JOIN "
+                       "PARTECIPA P ON (P.TipoEvento, P.Luogo, P.Data,P.Ora) = (E.TipoEvento, E.Luogo, E.Data,E.Ora) "
+                       "JOIN BAMBINO B ON B.NomeSquadra = P.NomeSquadra WHERE B.Matricola = ? AND CAST(E.TipoEvento as INTEGER) <101"
+                       " AND (?,E.TipoEvento, E.Luogo, E.Data, E.Ora) NOT IN (SELECT I.MatrBambino,I.TipoEvento, I.Luogo, I.Data, I.Ora FROM ISCRIZIONE I)  "
+                       "ORDER BY E.Data ASC, E.Ora ASC",
+                       [session['matricola'],session['matricola']])
+        listgite = cursor.fetchall()
+        database.close()
+
+        return render_template("formInserisciIscrizioneGita.html", usernamesession=session['nome'] + " " + session
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                               cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
+                               indirizzo=session['indirizzo'],
+                               telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader,
+                               totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini, listgite=listgite)
+    else:
+        return redirect(url_for('login'))
 
 app.run(host="127.0.0.1", port=5000)
