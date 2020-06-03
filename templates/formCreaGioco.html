@@ -267,6 +267,32 @@
                         <option>5</option>
                     </select>
                 </div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm">
+                       <thead>
+                        <tr>
+                            <th>Nome Squadra</th>
+                            <th>Partecipa/ Non Partecipa</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        {% for squadra in listsquadre%}
+                        <tr>
+                            <td>{{ squadra[0] }}</td>
+                            <td>{{ squadra[1] }}</td>
+                            <td>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="check" name={{ squadra[0] }}>
+                                    <label class="form-check-label" for="check">Partecipa</label>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
                 <div class="float-right">
                     <input type="submit" class="btn btn-primary btn-lg mb-1" value="Crea Gioco">
                 </div>

@@ -628,9 +628,12 @@ def home_animatore():
     if 'animatore' in session:
         database = sqlite3.connect(path)
         cursor = database.cursor()
-        # todo da sistemare con gli eventi solo della propria squadra
-        cursor.execute("SELECT TipoEvento, Luogo, Data, Ora, Descrizione FROM EVENTO ORDER BY Data ASC, Ora ASC")
-        rows = cursor.fetchall()
+
+        cursor.execute("SELECT E.TipoEvento, E.Luogo, E.Data, E.Ora, E.Descrizione FROM EVENTO E JOIN "
+                       "PARTECIPA P ON (P.TipoEvento, P.Luogo, P.Data,P.Ora) = (E.TipoEvento, E.Luogo, E.Data,E.Ora) "
+                       "JOIN ANIMATORE A ON A.NomeSquadra = P.NomeSquadra WHERE A.Matricola = ?  ORDER BY E.Data ASC, E.Ora ASC",
+                       [session['matricola']])
+        listeventi = cursor.fetchall()
         database.close()
         return render_template("homeANIMATORE.html", usernamesession=session['nome'] + " " + session
         ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
@@ -644,7 +647,7 @@ def home_animatore():
                                totaleesterni=totale_esterni,
                                totaleanimatori=totale_animatori,
                                totalebambini=totale_bambini,
-                               listeventi=rows,
+                               listeventi=listeventi,
                                tipologia=session['nomeSquadra'])
     else:
         return redirect(url_for('login'))
@@ -680,9 +683,12 @@ def home_bambino():
     if 'bambino' in session:
         database = sqlite3.connect(path)
         cursor = database.cursor()
-        # todo da sistemare con gli eventi della propria squadra
-        cursor.execute("SELECT TipoEvento, Luogo, Data, Ora, Descrizione FROM EVENTO ORDER BY Data ASC, Ora ASC")
-        rows = cursor.fetchall()
+
+        cursor.execute("SELECT E.TipoEvento, E.Luogo, E.Data, E.Ora, E.Descrizione FROM EVENTO E JOIN "
+                       "PARTECIPA P ON (P.TipoEvento, P.Luogo, P.Data,P.Ora) = (E.TipoEvento, E.Luogo, E.Data,E.Ora) "
+                       "JOIN BAMBINO B ON B.NomeSquadra = P.NomeSquadra WHERE B.Matricola = ?  ORDER BY E.Data ASC, E.Ora ASC",
+                       [session['matricola']])
+        listeventi = cursor.fetchall()
         database.close()
         return render_template("homeBAMBINO.html", usernamesession=session['nome'] + " " + session
         ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
@@ -696,7 +702,7 @@ def home_bambino():
                                totaleesterni=totale_esterni,
                                totaleanimatori=totale_animatori,
                                totalebambini=totale_bambini,
-                               listeventi=rows)
+                               listeventi=listeventi)
     else:
         return redirect(url_for('login'))
 
@@ -1017,15 +1023,48 @@ def form_crea_gita():
             flash("Attenzione: gita già inserita!")
         finally:
             database.close()
+        database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = 1")
+
+        cursor = database.cursor()
+
+        try:
+            cursor.execute("SELECT Nome FROM SQUADRA")
+            rows = cursor.fetchall()
+
+            for squadra in rows:
+                if request.form.get(squadra[0]) == "on":
+                    partecipa = True;
+                else:
+                    partecipa = False
+                cursor = database.cursor()
+                # inserisco partecipazione se non già inserita
+                if partecipa == True:
+                    cursor.execute("INSERT INTO PARTECIPA VALUES (?,?,?,?,?);",
+                                   [squadra[0], tipoGita, luogo, date, time])
+                    cursor.fetchall()
+
+            database.commit()
+        except:
+            flash("Attenzione: Almeno un squadra già partecipa all'evento")
+        finally:
+            database.close()
 
     if 'leader' in session:
+
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+
+        cursor.execute("SELECT Nome FROM SQUADRA")
+        listsquadre = cursor.fetchall()
+
         return render_template("formCreaGita.html", usernamesession=session['nome'] + " " + session
         ['cognome'], totalepartecipanti=(
                 totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader, totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
                                totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
-                               totalebambini=totale_bambini)
+                               totalebambini=totale_bambini, listsquadre=listsquadre)
     else:
         return redirect(url_for('login'))
 
@@ -1058,14 +1097,47 @@ def form_crea_gioco():
         finally:
             database.close()
 
+        database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = 1")
+
+        cursor = database.cursor()
+
+        try:
+            cursor.execute("SELECT Nome FROM SQUADRA")
+            rows = cursor.fetchall()
+
+            for squadra in rows:
+                if request.form.get(squadra[0]) == "on":
+                    partecipa = True;
+                else:
+                    partecipa = False
+                cursor = database.cursor()
+                # inserisco partecipazione se non già inserita
+                if partecipa == True:
+                    cursor.execute("INSERT INTO PARTECIPA VALUES (?,?,?,?,?);",
+                                   [squadra[0], tipoGioco, luogo, date, time])
+                    cursor.fetchall()
+
+            database.commit()
+        except:
+            flash("Attenzione: Almeno un squadra già partecipa all'evento")
+        finally:
+            database.close()
+
     if 'leader' in session:
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+
+        cursor.execute("SELECT Nome FROM SQUADRA")
+        listsquadre = cursor.fetchall()
+
         return render_template("formCreaGioco.html", usernamesession=session['nome'] + " " + session
         ['cognome'], totalepartecipanti=(
                 totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader, totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
                                totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
-                               totalebambini=totale_bambini)
+                               totalebambini=totale_bambini, listsquadre=listsquadre)
     else:
         return redirect(url_for('login'))
 
@@ -1101,6 +1173,32 @@ def form_crea_laboratorio():
             flash("Attenzione: laboratorio già inserito!")
         finally:
             database.close()
+        database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = 1")
+
+        cursor = database.cursor()
+
+        try:
+            cursor.execute("SELECT Nome FROM SQUADRA")
+            rows = cursor.fetchall()
+
+            for squadra in rows:
+                if request.form.get(squadra[0]) == "on":
+                    partecipa = True;
+                else:
+                    partecipa = False
+                cursor = database.cursor()
+                # inserisco partecipazione se non già inserita
+                if partecipa == True:
+                    cursor.execute("INSERT INTO PARTECIPA VALUES (?,?,?,?,?);",
+                                   [squadra[0], tipoLab, luogo, date, time])
+                    cursor.fetchall()
+
+            database.commit()
+        except:
+            flash("Attenzione: Almeno un squadra già partecipa all'evento")
+        finally:
+            database.close()
 
     if 'leader' in session:
         database = sqlite3.connect(path)
@@ -1110,6 +1208,9 @@ def form_crea_laboratorio():
             "SELECT Matricola,Nome,Cognome FROM PERSONALE WHERE Ruolo = 'esterno'")
         listesterni = cursor.fetchall()
 
+        cursor.execute("SELECT Nome FROM SQUADRA")
+        listsquadre = cursor.fetchall()
+
         database.close()
         return render_template("formCreaLaboratorio.html", usernamesession=session['nome'] + " " + session
         ['cognome'], totalepartecipanti=(
@@ -1117,7 +1218,7 @@ def form_crea_laboratorio():
                                totaleleader=totale_leader, totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
                                totaleesterni=totale_esterni, totaleanimatori=totale_animatori,
-                               totalebambini=totale_bambini, listesterni=listesterni)
+                               totalebambini=totale_bambini, listesterni=listesterni, listsquadre=listsquadre)
     else:
         return redirect(url_for('login'))
 
@@ -1428,7 +1529,9 @@ def form_mostra_appello():
                 session['matricola'] + "' AND A.Data = '" + data + "'")
             tipologia = "Animatori"
         elif 'leader' in session:
-            cursor.execute("SELECT A.IdPersonale, Nome, Cognome, Presenza FROM APPELLOPERSONALE A JOIN PERSONALE P ON A.IdPersonale = P.Matricola  WHERE A.Data = ? ",[data])
+            cursor.execute(
+                "SELECT A.IdPersonale, Nome, Cognome, Presenza FROM APPELLOPERSONALE A JOIN PERSONALE P ON A.IdPersonale = P.Matricola  WHERE A.Data = ? ",
+                [data])
             tipologia = "Personale"
 
         rows = cursor.fetchall()
