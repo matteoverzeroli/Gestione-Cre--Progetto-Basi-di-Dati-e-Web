@@ -1264,37 +1264,37 @@ def form_crea_squadra():
 
 def set_id_evento(tipoEvento):
 
-    if str(tipoEvento).split(",")[0].__contains__("Cucina"):
+    if str(tipoEvento).split(",")[0].__contains__("CUCINA"):
         return "201"
-    elif str(tipoEvento).split(",")[0].__contains__("Pittura"):
+    elif str(tipoEvento).split(",")[0].__contains__("PITTURA"):
         return "202"
-    elif str(tipoEvento).split(",")[0].__contains__("Circo"):
+    elif str(tipoEvento).split(",")[0].__contains__("CIRCO"):
         return "203"
-    elif str(tipoEvento).split(",")[0].__contains__("Compiti"):
+    elif str(tipoEvento).split(",")[0].__contains__("COMPITI"):
         return "204"
-    elif str(tipoEvento).split(",")[0].__contains__("Musica"):
+    elif str(tipoEvento).split(",")[0].__contains__("MUSICA"):
         return "205"
-    elif str(tipoEvento).split(",")[0].__contains__("Altro Laboratorio"):
+    elif str(tipoEvento).split(",")[0].__contains__("ALTRO LABORATORIO"):
         return "206"
-    elif str(tipoEvento).split(",")[0].__contains__("Calcio"):
+    elif str(tipoEvento).split(",")[0].__contains__("CALCIO"):
         return "101"
-    elif str(tipoEvento).split(",")[0].__contains__("Pallavolo"):
+    elif str(tipoEvento).split(",")[0].__contains__("PALLAVOLO"):
         return "102"
-    elif str(tipoEvento).split(",")[0].__contains__("Palla Prigioniera"):
+    elif str(tipoEvento).split(",")[0].__contains__("PALLA PRIGIONIERA"):
         return "103"
-    elif str(tipoEvento).split(",")[0].__contains__("Caccia al Tesoro"):
+    elif str(tipoEvento).split(",")[0].__contains__("CACCIA AL TESORO"):
         return "104"
-    elif str(tipoEvento).split(",")[0].__contains__("Altro Gioco"):
+    elif str(tipoEvento).split(",")[0].__contains__("ALTRO GIOCO"):
         return "105"
-    elif str(tipoEvento).split(",")[0].__contains__("Gita in Montagna"):
+    elif str(tipoEvento).split(",")[0].__contains__("GITA IN MONTAGNA"):
         return "1"
-    elif str(tipoEvento).split(",")[0].__contains__("Gita al Mare"):
+    elif str(tipoEvento).split(",")[0].__contains__("GITA AL MARE"):
         return "2"
-    elif str(tipoEvento).split(",")[0].__contains__("Gita al Lago"):
+    elif str(tipoEvento).split(",")[0].__contains__("GITA AL LAGO"):
         return "3"
-    elif str(tipoEvento).split(",")[0].__contains__("Gita Culturale"):
+    elif str(tipoEvento).split(",")[0].__contains__("GITA CULTURALE"):
         return "4"
-    elif str(tipoEvento).split(",")[0].__contains__("Altra Gita"):
+    elif str(tipoEvento).split(",")[0].__contains__("ALTRA GITA"):
         return "5"
 
 
@@ -1379,17 +1379,18 @@ def assegna_arbitraggio():
         giocoselezionato = request.form['nomegioco']
         responsabileselezionato = str(request.form['nomeresponsabile']).split()[0].lstrip()
 
-        idEvento = set_id_evento(str(giocoselezionato).split()[0])
+        idEvento = set_id_evento(giocoselezionato)
 
         database = sqlite3.connect(path)
         database.execute("PRAGMA foreign_keys = 1")
 
         cursor = database.cursor()
+        print(idEvento + " ")
         try:
             cursor.execute(
                 "INSERT INTO ARBITRA(MatrResponsabile,TipoEvento,Luogo,Data, Ora) VALUES (?,?,?,?,?);",
-                [responsabileselezionato, idEvento, str(giocoselezionato).split()[1].lstrip(),
-                 str(giocoselezionato).split()[2].lstrip(), str(giocoselezionato).split()[3].lstrip()])
+                [responsabileselezionato, idEvento, str(giocoselezionato).split(",")[1].lstrip(),
+                 str(giocoselezionato).split(",")[2].lstrip(), str(giocoselezionato).split(",")[3].lstrip()])
 
             database.commit()
         except Exception as e:
@@ -1656,4 +1657,98 @@ def form_iscrizione_gita():
     else:
         return redirect(url_for('login'))
 
-app.run(host="127.0.0.1", port=5000)
+
+@app.route('/formAssegnaPunteggio', methods=['GET', 'POST'])
+def form_assegna_punteggio():
+    if request.method == 'POST' and 'form_evento' in request.form:
+        tipoEvento = request.form['tipoEvento']
+        idEvento = set_id_evento(tipoEvento)
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+        cursor.execute("SELECT NomeSquadra FROM PARTECIPA WHERE TipoEvento ='" + idEvento + "' AND Luogo ='" + str(tipoEvento).split(",")[1].lstrip() + "' AND Data ='" + str(tipoEvento).split(",")[2].lstrip() + "' AND Ora ='" + str(tipoEvento).split(",")[3].lstrip() + "'" )
+        listsquadre = cursor.fetchall()
+        database.close()
+        print("EVENTO " + tipoEvento)
+        return render_template("formAssegnaPunteggio.html", usernamesession=session['nome'] + " " + session
+                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                               cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
+                               indirizzo=session['indirizzo'],
+                               telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
+                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader,
+                               totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini,
+                               listsquadre=listsquadre,
+                               stato="getsquadre",
+                               event=tipoEvento)
+
+    elif request.method == 'POST' and 'form_assegna' in request.form:
+        squadra = request.form['squadra']
+        tipoEvento = request.form['event']
+        idEvento = set_id_evento(tipoEvento)
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+        cursor.execute("SELECT Punteggio FROM EVENTO WHERE TipoEvento ='" + idEvento + "' AND Luogo ='" + str(tipoEvento).split(",")[1].lstrip() + "' AND Data ='" + str(tipoEvento).split(",")[2].lstrip() + "' AND Ora ='" + str(tipoEvento).split(",")[3].lstrip() + "'" )
+        punteggio = cursor.fetchone()
+        cursor = database.cursor()
+        cursor.execute("UPDATE SQUADRA SET PUNTEGGIO = PUNTEGGIO + " + str(punteggio[0]) +" WHERE Nome = '"+ squadra +"'")
+        cursor = database.cursor()
+        cursor.execute("UPDATE EVENTO SET Punteggio = 0 WHERE TipoEvento ='" + idEvento + "' AND Luogo ='" + str(tipoEvento).split(",")[1].lstrip() + "' AND Data ='" + str(tipoEvento).split(",")[2].lstrip() + "' AND Ora ='" + str(tipoEvento).split(",")[3].lstrip() + "'")
+
+        database.commit()
+        database.close()
+
+    if 'responsabile' in session:
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+        cursor.execute("SELECT E.TipoEvento, E.Luogo, E.Data, E.Ora, E.Descrizione FROM ARBITRA A JOIN EVENTO E ON (E.TipoEvento, E.Luogo, E.Data, E.Ora)=(A.TipoEvento, A.Luogo, A.Data, A.Ora) WHERE A.MatrResponsabile = ? AND PUNTEGGIO > 0 ORDER BY E.Data ASC, E.Ora ASC",
+            [session['matricola']])
+        listgiochi = cursor.fetchall()
+
+        database.close()
+        return render_template("formAssegnaPunteggio.html", usernamesession=session['nome'] + " " + session
+                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                               cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
+                               indirizzo=session['indirizzo'],
+                               telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
+                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader,
+                               totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini,
+                               listgiochi=listgiochi,
+                               stato="geteventi")
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/formMostraClassifica', methods=['GET', 'POST'])
+def form_mostra_classifica():
+    if 'responsabile' in session:
+        database = sqlite3.connect(path)
+        cursor = database.cursor()
+        cursor.execute("SELECT Nome, Punteggio FROM SQUADRA ORDER BY Punteggio DESC")
+        listsquadre = cursor.fetchall()
+
+        database.close()
+        return render_template("formMostraClassifica.html", usernamesession=session['nome'] + " " + session
+                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                               cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
+                               indirizzo=session['indirizzo'],
+                               telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
+                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader,
+                               totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini,
+                               listsquadre=listsquadre)
+    else:
+        return redirect(url_for('login'))
+
+app.run(host="127.0.0.1", port=5000, debug="true")

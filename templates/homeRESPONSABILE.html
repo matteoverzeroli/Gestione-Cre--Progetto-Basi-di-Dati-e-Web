@@ -10,14 +10,6 @@
 
     <link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/dashboard/">
 
-    <!-- Bootstrap core CSS -->
-    <!--<link href="/docs/4.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">-->
-
-    <!-- Favicons -->
-    <!--<link rel="apple-touch-icon" href="/docs/4.5/assets/img/favicons/apple-touch-icon.png" sizes="180x180">
-    <link rel="icon" href="/docs/4.5/assets/img/favicons/favicon-32x32.png" sizes="32x32" type="image/png">
-    <link rel="icon" href="/docs/4.5/assets/img/favicons/favicon-16x16.png" sizes="16x16" type="image/png"> -->
-    <!--<link rel="manifest" href="/docs/4.5/assets/img/favicons/manifest.json">-->
     <link rel="mask-icon" href="/docs/4.5/assets/img/favicons/safari-pinned-tab.svg" color="#563d7c">
     <link rel="icon" href="/docs/4.5/assets/img/favicons/favicon.ico">
     <meta name="msapplication-config" content="/docs/4.5/assets/img/favicons/browserconfig.xml">
@@ -96,6 +88,24 @@
                         <a class="nav-link" href="/formMostraAppello">
                             <span data-feather="file"></span>
                             Mostra Appello
+                        </a>
+                    </li>
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Punteggio</span>
+                        <a class="d-flex align-items-center text-muted" href="#" aria-label="Crea un nuovo evento">
+                            <span data-feather="plus-circle"></span>
+                        </a>
+                    </h6>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/formAssegnaPunteggio">
+                            <span data-feather="file"></span>
+                            Assegna Punteggio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/formMostraClassifica">
+                            <span data-feather="file"></span>
+                            Mostra Classifica
                         </a>
                     </li>
                 </ul>
@@ -239,39 +249,39 @@
                     {% for evento in listeventi%}
                     <tr>
                         {% if evento[0] == "1" %}
-                        <td>Gita in Montagna</td>
+                        <td>GITA IN MONTAGNA</td>
                         {% elif evento[0] == "2" %}
-                        <td>Gita al Mare</td>
+                        <td>GITA AL MARE</td>
                         {% elif evento[0] == "3" %}
-                        <td>Gita al Lago</td>
+                        <td>GITA AL LAGO</td>
                         {% elif evento[0] == "4" %}
-                        <td>Gita Culturale</td>
+                        <td>GITA CULTURALE</td>
                         {% elif evento[0] == "5" %}
-                        <td>Altra Gita</td>
+                        <td>ALTRA GITA</td>
 
                         {% elif evento[0] == "101" %}
-                        <td>Calcio</td>
+                        <td>CALCIO</td>
                         {% elif evento[0] == "102" %}
-                        <td>Pallavolo</td>
+                        <td>PALLAVOLO</td>
                         {% elif evento[0] == "103" %}
-                        <td>Palla Prigioniera</td>
+                        <td>PALLA PRIGIONIERA</td>
                         {% elif evento[0] == "104" %}
-                        <td>Caccia al Tesoro</td>
+                        <td>CACCIA AL TESORO</td>
                         {% elif evento[0] == "105" %}
-                        <td>Altro Gioco</td>
+                        <td>ALTRO GIOCO</td>
 
                         {% elif evento[0] == "201" %}
-                        <td>Cucina</td>
+                        <td>CUCINA</td>
                         {% elif evento[0] == "202" %}
-                        <td>Pittura</td>
+                        <td>PITTURA</td>
                         {% elif evento[0] == "203" %}
-                        <td>Circo</td>
+                        <td>CIRCO</td>
                         {% elif evento[0] == "204" %}
-                        <td>Compiti</td>
+                        <td>COMPITI</td>
                         {% elif evento[0] == "205" %}
-                        <td>Musica</td>
+                        <td>MUSICA</td>
                         {% elif evento[0] == "206" %}
-                        <td>Altro Laboratorio</td>
+                        <td>ALTRO LABORATORIO</td>
                         {% endif %}
 
                         <td>{{ evento[1] }}</td>
@@ -301,15 +311,15 @@
                     {% for evento in listgiochi%}
                     <tr>
                         {% if evento[0] == "101" %}
-                        <td>Calcio</td>
+                        <td>CALCIO</td>
                         {% elif evento[0] == "102" %}
-                        <td>Pallavolo</td>
+                        <td>PALLAVOLO</td>
                         {% elif evento[0] == "103" %}
-                        <td>Palla Prigioniera</td>
+                        <td>PALLA PRIGIONIERA</td>
                         {% elif evento[0] == "104" %}
-                        <td>Caccia al Tesoro</td>
+                        <td>CACCIA AL TESORO</td>
                         {% elif evento[0] == "105" %}
-                        <td>Altro Gioco</td>
+                        <td>ALTRO GIOCO</td>
                         {% endif %}
 
                         <td>{{ evento[1] }}</td>

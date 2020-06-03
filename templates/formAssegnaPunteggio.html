@@ -6,18 +6,10 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Jekyll v4.0.1">
-    <title>Tabella Movimenti</title>
+    <title>Assegna Punteggio</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/dashboard/">
 
-    <!-- Bootstrap core CSS -->
-    <!--<link href="/docs/4.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">-->
-
-    <!-- Favicons -->
-    <!--<link rel="apple-touch-icon" href="/docs/4.5/assets/img/favicons/apple-touch-icon.png" sizes="180x180">
-    <link rel="icon" href="/docs/4.5/assets/img/favicons/favicon-32x32.png" sizes="32x32" type="image/png">
-    <link rel="icon" href="/docs/4.5/assets/img/favicons/favicon-16x16.png" sizes="16x16" type="image/png"> -->
-    <!--<link rel="manifest" href="/docs/4.5/assets/img/favicons/manifest.json">-->
     <link rel="mask-icon" href="/docs/4.5/assets/img/favicons/safari-pinned-tab.svg" color="#563d7c">
     <link rel="icon" href="/docs/4.5/assets/img/favicons/favicon.ico">
     <meta name="msapplication-config" content="/docs/4.5/assets/img/favicons/browserconfig.xml">
@@ -74,22 +66,46 @@
                         </a>
                     </h6>
                     <li class="nav-item">
-                        <a class="nav-link" href="/homeSEGRETARIA">
+                        <a class="nav-link" href="/homeRESPOSNABILE">
                             <span data-feather="home"></span>
                             Home
                             <span class="sr-only">(current)</span>
                         </a>
                     </li>
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Appello</span>
+                        <a class="d-flex align-items-center text-muted" href="#" aria-label="Crea un nuovo evento">
+                            <span data-feather="plus-circle"></span>
+                        </a>
+                    </h6>
                     <li class="nav-item">
-                        <a class="nav-link" href="/formAggiungiMovimento">
+                        <a class="nav-link" href="/formAggiungiAppello">
                             <span data-feather="file"></span>
-                            Inserisci Movimento
+                            Appello Animatori
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="/tabellaMovimenti">
+                        <a class="nav-link" href="/formMostraAppello">
                             <span data-feather="file"></span>
-                            Visualizza Movimenti
+                            Mostra Appello
+                        </a>
+                    </li>
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Punteggio</span>
+                        <a class="d-flex align-items-center text-muted" href="#" aria-label="Crea un nuovo evento">
+                            <span data-feather="plus-circle"></span>
+                        </a>
+                    </h6>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">
+                            <span data-feather="file"></span>
+                            Assegna Punteggio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/formMostraClassifica">
+                            <span data-feather="file"></span>
+                            Mostra Classifica
                         </a>
                     </li>
                 </ul>
@@ -125,77 +141,62 @@
                 </div>
             </div>
 
-
-            <h2>MOVIMENTI </h2>
-            <div class="table-responsive">
-                <table class="table table-striped table-sm">
-                    <thead>
-                    <tr>
-                        <th>Tipo Evento</th>
-                        <th>Luogo</th>
-                        <th>Data</th>
-                        <th>Ora</th>
-                        <th>Descrizione</th>
-                        <th>Valore</th>
-                        <th>MatrSegretaria</th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                    {% for movimento in listmovimenti%}
-                    <tr>
-                        {% if evento[0] == "1" %}
-                        <td>GITA IN MONTAGNA</td>
-                        {% elif evento[0] == "2" %}
-                        <td>GITA AL MARE</td>
-                        {% elif evento[0] == "3" %}
-                        <td>GITA AL LAGO</td>
-                        {% elif evento[0] == "4" %}
-                        <td>GITA CULTURALE</td>
-                        {% elif evento[0] == "5" %}
-                        <td>ALTRA GITA</td>
-
-                        {% elif evento[0] == "101" %}
-                        <td>CALCIO</td>
+            <h2>Assegna Punteggio</h2>
+            <form method="post">
+                {% if stato == "geteventi" %}
+                <div class="form-group">
+                    <label for="tipoEvento">Seleziona Gioco</label>
+                    <select class="form-control" name="tipoEvento" id="tipoEvento" required>
+                        <option selected value="">Scegli...</option>
+                        {% for evento in listgiochi %}
+                        {% if evento[0] == "101" %}
+                        <option>CALCIO, &nbsp; {{ evento [1] }}, &nbsp;{{ evento
+                            [2] }}, &nbsp;{{ evento [3] }}, &nbsp;{{ evento [4] }}
+                        </option>
                         {% elif evento[0] == "102" %}
-                        <td>PALLAVOLO</td>
+                        <option>PALLAVOLO, {{ evento [1] }}, {{ evento
+                            [2] }}, {{ evento [3] }}, {{ evento[4] }}
+                        </option>
                         {% elif evento[0] == "103" %}
-                        <td>PALLA PRIGIONIERA</td>
+                        <option>PALLA PRIGIONIERA, &nbsp; {{ evento [1] }}, &nbsp;{{ evento
+                            [2] }}, &nbsp;{{ evento [3] }}, &nbsp;{{ evento [4] }}
+                        </option>
                         {% elif evento[0] == "104" %}
-                        <td>CACCIA AL TESORO</td>
+                        <option>CACCIA AL TESORO, &nbsp; {{ evento [1] }}, &nbsp;{{ evento
+                            [2] }}, &nbsp;{{ evento [3] }}, &nbsp;{{ evento [4] }}
+                        </option>
                         {% elif evento[0] == "105" %}
-                        <td>ALTRO GIOCO</td>
-
-                        {% elif evento[0] == "201" %}
-                        <td>CUCINA</td>
-                        {% elif evento[0] == "202" %}
-                        <td>PITTURA</td>
-                        {% elif evento[0] == "203" %}
-                        <td>CIRCO</td>
-                        {% elif evento[0] == "204" %}
-                        <td>COMPITI</td>
-                        {% elif evento[0] == "205" %}
-                        <td>MUSICA</td>
-                        {% elif evento[0] == "206" %}
-                        <td>ALTRO LABORATORIO</td>
+                        <option>ALTRO GIOCO, &nbsp; {{ evento [1] }}, &nbsp;{{ evento
+                            [2] }}, &nbsp;{{ evento [3] }}, &nbsp;{{ evento [4] }}
+                        </option>
                         {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="float-right">
+                    <input type="submit" name="form_evento" class="btn btn-primary btn-lg mb-1" value="Mostra Squadre">
+                </div>
+                {% endif %}
+            </form>
 
-                        <td>{{ movimento[1] }}</td>
-                        <td>{{ movimento[2] }}</td>
-                        <td>{{ movimento[3] }}</td>
-                        <td>{{ movimento[4] }}</td>
-                        {% if movimento[6] == 1 %}
-                        <td>{{ movimento[5] }}</td>
-                        {% else %}
-                        <td> - &nbsp; {{ movimento[5] }}</td>
-                        {% endif %}
+            <form method="post">
+                {% if stato == "getsquadre"%}
+                <div class="form-group">
+                    <input type="text" class="form-control" name="event" id="event" value="{{event}}" readonly>
+                    <label for="tipoSquadra">Seleziona Gioco</label>
+                    <select class="form-control" name="squadra" id="tipoSquadra" required>
+                        <option selected value="">Scegli...</option>
+                        {% for squadra in listsquadre %}
+                        <option>{{squadra[0]}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="float-right">
+                    <input type="submit" name="form_assegna" class="btn btn-primary btn-lg mb-1" value="Assegna Punteggio">
+                </div>
+                {% endif %}
+            </form>
 
-                        <td>{{ movimento[7] }}</td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
         </main>
     </div>
 </div>
@@ -204,8 +205,6 @@
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
         crossorigin="anonymous"></script>
 <script>window.jQuery || document.write('<script src="../assets/js/vendor/jquery.slim.min.js"><\/script>')</script>
-<!--<script src="../assets/dist/js/bootstrap.bundle.js"></script>-->
-<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.9.0/feather.min.js"></script>-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
 
 </body>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Crea Gioco</title>
+    <title>Assegna Arbitraggio</title>
     <link rel="canonical" href="https://getbootstrap.com/docs/4.5/examples/dashboard/">
 
     <!-- Bootstrap core CSS -->
@@ -235,23 +235,23 @@
                             <option selected value="">Scegli...</option>
                             {% for gioco in listgiochi%}
                             {% if gioco[0] == "101" %}
-                            <option>Calcio &nbsp; {{ gioco[1] }} &nbsp; {{ gioco[2] }} &nbsp; {{ gioco[3] }} &nbsp;
+                            <option>CALCIO, &nbsp; {{ gioco[1] }}, &nbsp; {{ gioco[2] }}, &nbsp; {{ gioco[3] }}, &nbsp;
                                 {{ gioco[4] }}
                             </option>
                             {% elif gioco[0] == "102" %}
-                            <option>Pallavolo &nbsp; {{ gioco[1] }} &nbsp; {{ gioco[2] }} &nbsp; {{ gioco[3] }}
+                            <option>PALLAVOLO, &nbsp; {{ gioco[1] }}, &nbsp; {{ gioco[2] }}, &nbsp; {{ gioco[3] }},
                                 &nbsp; {{ gioco[4] }}
                             </option>
                             {% elif gioco[0] == "103" %}
-                            <option>Palla Prigioniera &nbsp; {{ gioco[1] }} &nbsp; {{ gioco[2] }} &nbsp; {{ gioco[3]
-                                }} &nbsp; {{ gioco[4] }}
+                            <option>PALLA PRIGIONIERA, &nbsp; {{ gioco[1] }}, &nbsp; {{ gioco[2] }}, &nbsp; {{ gioco[3]
+                                }}, &nbsp; {{ gioco[4] }}
                             </option>
                             {% elif gioco[0] == "104" %}
-                            <option>Caccia al Tesoro &nbsp; {{ gioco[1] }} &nbsp; {{ gioco[2] }} &nbsp; {{ gioco[3]
-                                }} &nbsp; {{ gioco[4] }}
+                            <option>CACCIA AL TESORO, &nbsp; {{ gioco[1] }}, &nbsp; {{ gioco[2] }}, &nbsp; {{ gioco[3]
+                                }}, &nbsp; {{ gioco[4] }}
                             </option>
                             {% elif gioco[0] == "105" %}
-                            <option>Altro Gioco &nbsp; {{ gioco[1] }} &nbsp; {{ gioco[2] }} &nbsp; {{ gioco[3] }}
+                            <option>ALTRO GIOCO, &nbsp; {{ gioco[1] }}, &nbsp; {{ gioco[2] }}, &nbsp; {{ gioco[3] }},
                                 &nbsp; {{ gioco[4] }}
                             </option>
                             {% endif %}
