@@ -88,6 +88,37 @@
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">{{usernamesession}}</h1>
             </div>
+             <h2>Inserisci presenza</h2>
+            <form method="post">
+                <div class="it-datepicker-wrapper">
+                    <div class="form-group">
+                        {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                        <ul class=flashes>
+                            {% for message in messages %}
+                            <li>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        {% endwith %}
+
+                        <label for="dataappello">Data</label>
+                        <input class="form-control it-date-datepicker" name="dataappello" id="dataappello" type="date"
+                               placeholder="gg/mm/aaaa" required>
+                    </div>
+                    <div class="form-group">
+
+                        <input type="radio" name="options" value="1"> Presente </input><br>
+                        <input type="radio" name="options" value="0"> Assente </input><br>
+                    </div>
+                    <div class="float-right">
+                        <input type="submit" name="form_appello" class="btn btn-primary btn-lg mb-1" name="appello"
+                               value="Salva Presenza">
+                    </div>
+                </div>
+            </form>
+            <br>
+            <br>
             <h2>EVENTO PROGRAMMATO</h2>
             <div class="table-responsive">
                 <table class="table table-striped table-sm">

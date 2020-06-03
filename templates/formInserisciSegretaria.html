@@ -154,6 +154,18 @@
                             Assegna Arbitraggio
                         </a>
                     </li>
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Mostra Appello Personale</span>
+                        <a class="d-flex align-items-center text-muted" href="#" aria-label="Assegna Arbitraggio">
+                            <span data-feather="plus-circle"></span>
+                        </a>
+                    </h6>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/formMostraAppello">
+                            <span data-feather="users"></span>
+                            Mostra Appello
+                        </a>
+                    </li>
                 </ul>
             </div>
         </nav>
@@ -163,7 +175,7 @@
                 <h1 class="h2">{{usernamesession}}</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="btn-group mr-2">
-                       <button type="button" class="btn btn-sm btn-outline-secondary">Totale Partecipanti:
+                        <button type="button" class="btn btn-sm btn-outline-secondary">Totale Partecipanti:
                             {{totalepartecipanti}}
                         </button>
                         <button type="button" class="btn btn-sm btn-outline-secondary">Totale Leader: {{totaleleader}}
@@ -188,36 +200,42 @@
             </div>
 
             <h2>Inserisci Segretaria</h2>
-            <form method="post" id = "segretariaForm">
+            <form method="post" id="segretariaForm">
                 <div class="form-group">
                     <label for="matricola">Matricola</label>
                     <input type="text" class="form-control" name="matricola" id="matricola" value="{{matricola}}">
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" name = 'password' class="form-control" id="password" placeholder="Password" value="{{password}}" required pattern="[a-zA-z0-9]{5}">
+                    <input type="password" name='password' class="form-control" id="password" placeholder="Password"
+                           value="{{password}}" required pattern="[a-zA-z0-9]{5}">
                 </div>
                 <div class="form-group">
                     <label for="nome">Nome</label>
-                    <input type="text" name="nome" class="form-control" id="nome" placeholder="Nome" required maxlength="50" >
+                    <input type="text" name="nome" class="form-control" id="nome" placeholder="Nome" required
+                           maxlength="50">
                 </div>
                 <div class="form-group">
                     <label for="cognome">Cognome</label>
-                    <input type="text" name="cognome" class="form-control" id="cognome" placeholder="Cognome" required maxlength="50">
+                    <input type="text" name="cognome" class="form-control" id="cognome" placeholder="Cognome" required
+                           maxlength="50">
                 </div>
                 <div class="form-group">
                     <label for="email">E-Mail</label>
-                    <input type="email" name="email" class="form-control" id="email" placeholder="email@admin.com" required maxlength="50">
+                    <input type="email" name="email" class="form-control" id="email" placeholder="email@admin.com"
+                           required maxlength="50">
                 </div>
                 <div class="it-datepicker-wrapper">
                     <div class="form-group">
                         <label for="date">Data di nascita</label>
-                        <input class="form-control it-date-datepicker" name="data" id="date" type="date" placeholder="gg/mm/aaaa" required >
+                        <input class="form-control it-date-datepicker" name="data" id="date" type="date"
+                               placeholder="gg/mm/aaaa" required>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="indirizzo">Indirizzo</label>
-                    <input type="text" name="indirizzo" class="form-control" id="indirizzo" placeholder="Topolandia, Via dei Paperon, 12" required maxlength="50">
+                    <input type="text" name="indirizzo" class="form-control" id="indirizzo"
+                           placeholder="Topolandia, Via dei Paperon, 12" required maxlength="50">
                 </div>
                 <div class="form-group">
                     <label for="telefono">Numero di telefono</label>

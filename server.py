@@ -340,6 +340,23 @@ def home_leader():
         database.close()
         updateSessionData('leader', rows)
 
+    if request.method == 'POST' and 'form_appello' in request.form:
+        presenza = request.form.get('options')
+        data = request.form.get('dataappello')
+
+        database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = 1")
+
+        try:
+            cursor = database.cursor();
+            cursor.execute("INSERT INTO APPELLOPERSONALE(IdPersonale,Data,Presenza) VALUES (?,?,?) ",
+                           [session['matricola'], data, presenza])
+            database.commit()
+        except:
+            flash("Attenzione: Appello già compilato per questa giornata!")
+        finally:
+            database.close()
+
     if 'leader' in session:
         database = sqlite3.connect(path)
         cursor = database.cursor()
@@ -394,6 +411,22 @@ def home_segretaria():
         totale_segretarie -= 1
 
         return redirect(url_for("logout"))
+    elif request.method == 'POST' and 'form_appello' in request.form:
+        presenza = request.form.get('options')
+        data = request.form.get('dataappello')
+
+        database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = 1")
+
+        try:
+            cursor = database.cursor();
+            cursor.execute("INSERT INTO APPELLOPERSONALE(IdPersonale,Data,Presenza) VALUES (?,?,?) ",
+                           [session['matricola'], data, presenza])
+            database.commit()
+        except:
+            flash("Attenzione: Appello già compilato per questa giornata!")
+        finally:
+            database.close()
 
     if 'segretaria' in session:
         database = sqlite3.connect(path)
@@ -445,6 +478,22 @@ def home_responsabile():
         global totale_responsabili
         totale_responsabili -= 1
         return redirect(url_for("logout"))
+    elif request.method == 'POST' and 'form_appello' in request.form:
+        presenza = request.form.get('options')
+        data = request.form.get('dataappello')
+
+        database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = 1")
+
+        try:
+            cursor = database.cursor();
+            cursor.execute("INSERT INTO APPELLOPERSONALE(IdPersonale,Data,Presenza) VALUES (?,?,?) ",
+                           [session['matricola'], data, presenza])
+            database.commit()
+        except:
+            flash("Attenzione: Appello già compilato per questa giornata!")
+        finally:
+            database.close()
 
     if 'responsabile' in session:
         database = sqlite3.connect(path)
@@ -504,6 +553,23 @@ def home_esterno():
         global totale_esterni
         totale_esterni -= 1
         return redirect(url_for("logout"))
+
+    elif request.method == 'POST' and 'form_appello' in request.form:
+        presenza = request.form.get('options')
+        data = request.form.get('dataappello')
+
+        database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = 1")
+
+        try:
+            cursor = database.cursor();
+            cursor.execute("INSERT INTO APPELLOPERSONALE(IdPersonale,Data,Presenza) VALUES (?,?,?) ",
+                           [session['matricola'], data, presenza])
+            database.commit()
+        except:
+            flash("Attenzione: Appello già compilato per questa giornata!")
+        finally:
+            database.close()
 
     if 'esterno' in session:
         database = sqlite3.connect(path)
@@ -1361,6 +1427,10 @@ def form_mostra_appello():
                 "SELECT A.IdAnimatore, B.Nome, B.Cognome, A.Presenza FROM ANIMATORE B JOIN APPELLOANIMATORE A ON (A.IdAnimatore = B.Matricola) WHERE B.MatrResponsabile = '" +
                 session['matricola'] + "' AND A.Data = '" + data + "'")
             tipologia = "Animatori"
+        elif 'leader' in session:
+            cursor.execute("SELECT A.IdPersonale, Nome, Cognome, Presenza FROM APPELLOPERSONALE A JOIN PERSONALE P ON A.IdPersonale = P.Matricola  WHERE A.Data = ? ",[data])
+            tipologia = "Personale"
+
         rows = cursor.fetchall()
         database.close()
         return render_template("formMostraAppello.html", usernamesession=session['nome'] + " " + session
@@ -1407,6 +1477,21 @@ def form_mostra_appello():
                                totaleanimatori=totale_animatori,
                                totalebambini=totale_bambini,
                                tipologia="Animatori"
+                               )
+    elif 'leader' in session:
+        return render_template("formMostraAppello.html", usernamesession=session['nome'] + " " + session
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+                               cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
+                               indirizzo=session['indirizzo'],
+                               telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                               totaleleader=totale_leader,
+                               totalesegretarie=totale_segretarie,
+                               totaleresponsabili=totale_responsabili,
+                               totaleesterni=totale_esterni,
+                               totaleanimatori=totale_animatori,
+                               totalebambini=totale_bambini,
+                               tipologia="Personale"
                                )
     else:
         return redirect(url_for('login'))

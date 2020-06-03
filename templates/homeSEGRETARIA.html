@@ -125,6 +125,37 @@
                 </div>
             </div>
 
+            <h2>Inserisci presenza</h2>
+            <form method="post">
+                <div class="it-datepicker-wrapper">
+                    <div class="form-group">
+                        {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                        <ul class=flashes>
+                            {% for message in messages %}
+                            <li>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        {% endwith %}
+
+                        <label for="dataappello">Data</label>
+                        <input class="form-control it-date-datepicker" name="dataappello" id="dataappello" type="date"
+                               placeholder="gg/mm/aaaa" required>
+                    </div>
+                    <div class="form-group">
+
+                        <input type="radio" name="options" value="1"> Presente </input><br>
+                        <input type="radio" name="options" value="0"> Assente </input><br>
+                    </div>
+                    <div class="float-right">
+                        <input type="submit" name="form_appello" class="btn btn-primary btn-lg mb-1" name="appello"
+                               value="Salva Presenza">
+                    </div>
+                </div>
+            </form>
+            <br>
+            <br>
             <h2>Dati Anagrafici</h2>
             <form method="post">
                 <div class="form-group">

@@ -68,14 +68,125 @@
                     <li class="nav-item">
                         {% if tipologia == "Animatori" %}
                         <a class="nav-link" href="/homeRESPONSABILE">
-                        {% else %}
-                        <a class="nav-link" href="/homeANIMATORE">
-                        {% endif %}
+                            <span data-feather="home"></span>
+                            Home
+                            <span class="sr-only">(current)</span></a>
+                        {% elif tipologia == "Personale"%}
+                        <a class="nav-link" href="/homeLEADER">
                             <span data-feather="home"></span>
                             Home
                             <span class="sr-only">(current)</span>
                         </a>
+
+                        {% else %}
+                        <a class="nav-link" href="/homeANIMATORE">
+                            <span data-feather="home"></span>
+                            Home
+                            <span class="sr-only">(current)</span>
+                        </a>
+                        {% endif %}
                     </li>
+                    {% if tipologia == "Personale"%}
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Inserisci Personale</span>
+                        <a class="d-flex align-items-center text-muted" href="#" aria-label="Crea un nuovo evento">
+                            <span data-feather="plus-circle"></span>
+                        </a>
+                    </h6>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/formInserisciSegretaria">
+                            <span data-feather="file"></span>
+                            Inserisci Segretaria
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/formInserisciResponsabile">
+                            <span data-feather="file"></span>
+                            Inserisci Responsabile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/formInserisciEsterno">
+                            <span data-feather="file"></span>
+                            Inserisci Esterno
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/formInserisciAnimatore">
+                            <span data-feather="file"></span>
+                            Inserisci Animatore
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/formInserisciBambino">
+                            <span data-feather="file"></span>
+                            Inserisci Bambino
+                        </a>
+                    </li>
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Crea Squadra</span>
+                        <a class="d-flex align-items-center text-muted" href="#" aria-label="Crea un nuovo evento">
+                            <span data-feather="plus-circle"></span>
+                        </a>
+                    </h6>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/formCreaSquadra">
+                            <span data-feather="shopping-cart"></span>
+                            Crea Squadra
+                        </a>
+                    </li>
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Crea Eventi</span>
+                        <a class="d-flex align-items-center text-muted" href="#" aria-label="Crea un nuovo evento">
+                            <span data-feather="plus-circle"></span>
+                        </a>
+                    </h6>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/formCreaGita">
+                            <span data-feather="shopping-cart"></span>
+                            Crea Gita
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/formCreaGioco">
+                            <span data-feather="users"></span>
+                            Crea Gioco
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/formCreaLaboratorio">
+                            <span data-feather="bar-chart-2"></span>
+                            Crea Laboratorio
+                        </a>
+                    </li>
+
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Assegna Arbitraggio</span>
+                        <a class="d-flex align-items-center text-muted" href="#" aria-label="Assegna Arbitraggio">
+                            <span data-feather="plus-circle"></span>
+                        </a>
+                    </h6>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/formAssegnaArbitraggio">
+                            <span data-feather="users"></span>
+                            Assegna Arbitraggio
+                        </a>
+                    </li>
+
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Mostra Appello Personale</span>
+                        <a class="d-flex align-items-center text-muted" href="#" aria-label="Assegna Arbitraggio">
+                            <span data-feather="plus-circle"></span>
+                        </a>
+                    </h6>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/formMostraAppello">
+                            <span data-feather="users"></span>
+                            Mostra Appello
+                        </a>
+                    </li>
+                    {% else %}
+
                     <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
                         <span>Appello</span>
                         <a class="d-flex align-items-center text-muted" href="#" aria-label="Crea un nuovo evento">
@@ -94,6 +205,7 @@
                             Mostra Appello
                         </a>
                     </li>
+                    {% endif %}
                 </ul>
             </div>
         </nav>
@@ -132,7 +244,8 @@
                 <div class="it-datepicker-wrapper">
                     <div class="form-group">
                         <label for="date">Data</label>
-                        <input class="form-control it-date-datepicker" name="date" id="date" type="date" placeholder="gg/mm/aaaa" required>
+                        <input class="form-control it-date-datepicker" name="date" id="date" type="date"
+                               placeholder="gg/mm/aaaa" required>
                     </div>
                 </div>
                 <div class="float-right">
@@ -143,7 +256,7 @@
                 <br>
                 <div class="table-responsive">
                     <table class="table table-striped table-sm">
-                       <thead>
+                        <thead>
                         <tr>
                             <th>Matricola</th>
                             <th>Nome</th>
@@ -160,9 +273,9 @@
                             <td>{{ bambino[2] }}</td>
                             <td>
                                 {% if bambino[3] == 0 %}
-                                    Assente
+                                Assente
                                 {% else %}
-                                    Presente
+                                Presente
                                 {% endif %}
                             </td>
                         </tr>
