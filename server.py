@@ -1,6 +1,6 @@
 import os
 import sqlite3
-
+import hashlib
 from flask import Flask, request, render_template, redirect, url_for, session, flash
 
 app = Flask(__name__)
@@ -14,12 +14,12 @@ cursor = database.cursor()
 ruolo_partecipanti = ['leader', 'segretaria', 'responsabile', 'esterno', 'animatore', 'bambino']
 
 # totale partecimanti
-totale_leader = 0;
+totale_leader = -1;
 totale_segretarie = 0;
 totale_responsabili = 0;
 totale_esterni = 0;
-totale_bambini = 0;
-totale_animatori = 0;
+totale_bambini = -1;
+totale_animatori = -1;
 
 # cerco matricola massima utilizzata
 matricola_max = 0
@@ -36,7 +36,7 @@ database.execute("CREATE TABLE IF NOT EXISTS PERSONALE("
                  "NumTelefono INTEGER NOT NULL, "
                  "NumCellulare INTEGER, "
                  "Ruolo VARCHAR(12) NOT NULL, "
-                 "PRIMARY KEY (Matricola)) ;")
+                 "PRIMARY KEY (Matricola));")
 
 database.execute("CREATE TABLE IF NOT EXISTS ANIMATORE("
                  "Matricola CHAR(5), "
@@ -48,13 +48,13 @@ database.execute("CREATE TABLE IF NOT EXISTS ANIMATORE("
                  "Indirizzo VARCHAR(50) NOT NULL, "
                  "NumTelefono INTEGER NOT NULL, "
                  "NumCellulare INTEGER, "
-                 "MatrResponsabile CHAR(5) NOT NULL, "
-                 "NomeSquadra VARCHAR(10) NOT NULL,  "
+                 "MatrResponsabile CHAR(5) NOT NULL DEFAULT '00000', "
+                 "NomeSquadra VARCHAR(10),  "
                  "PRIMARY KEY (Matricola), "
                  "FOREIGN KEY (MatrResponsabile) "
-                 "REFERENCES PERSONALE(Matricola), "
+                 "REFERENCES PERSONALE(Matricola) ON DELETE SET DEFAULT, "
                  "FOREIGN KEY (NomeSquadra) "
-                 "REFERENCES SQUADRA(Nome));")
+                 "REFERENCES SQUADRA(Nome))")
 
 database.execute("CREATE TABLE IF NOT EXISTS BAMBINO("
                  "Matricola CHAR(5), "
@@ -68,7 +68,7 @@ database.execute("CREATE TABLE IF NOT EXISTS BAMBINO("
                  "NumCellulare INTEGER, "
                  "NominativoMadre VARCHAR(50) NOT NULL, "
                  "NominativoPadre VARCHAR(50) NOT NULL, "
-                 "NomeSquadra VARCHAR(10) NOT NULL,  "
+                 "NomeSquadra VARCHAR(10),  "
                  "PRIMARY KEY (Matricola) "
                  "FOREIGN KEY (NomeSquadra) "
                  "REFERENCES SQUADRA(Nome));")
@@ -82,11 +82,11 @@ database.execute("CREATE TABLE IF NOT EXISTS MOVIMENTO("
                  "Descrizione VARCHAR(50) NOT NULL,"
                  "Valore FLOAT NOT NULL,"
                  "Inout BIT NOT NULL,"
-                 "MatrSegretaria CHAR(5) NOT NULL,"
+                 "MatrSegretaria CHAR(5) NOT NULL DEFAULT '00000',"
                  "FOREIGN KEY (TipoEvento,Luogo,Data,Ora) "
                  "REFERENCES EVENTO(TipoEvento,Luogo,Data,Ora),"
                  "FOREIGN KEY (MatrSegretaria) "
-                 "REFERENCES PERSONALE(Matricola));")
+                 "REFERENCES PERSONALE(Matricola) ON DELETE SET DEFAULT);")
 
 database.execute("CREATE TABLE IF NOT EXISTS EVENTO("
                  "TipoEvento VARCHAR(10), "
@@ -95,10 +95,10 @@ database.execute("CREATE TABLE IF NOT EXISTS EVENTO("
                  "Ora TIME,"
                  "Descrizione VARCHAR(50) NOT NULL,"
                  "Punteggio INTEGER,"
-                 "MatrLeader CHAR(5) NOT NULL DEFAULT '00001', "
+                 "MatrLeader CHAR(5) NOT NULL DEFAULT '00000', "
                  "PRIMARY KEY (TipoEvento,Luogo,Data,Ora),"
                  "FOREIGN KEY (MatrLeader) "
-                 "REFERENCES PERSONALE(Matricola));")
+                 "REFERENCES PERSONALE(Matricola) ON DELETE SET DEFAULT );")
 
 database.execute("CREATE TABLE IF NOT EXISTS SQUADRA("
                  "Nome VARCHAR(10),"
@@ -108,19 +108,19 @@ database.execute("CREATE TABLE IF NOT EXISTS SQUADRA("
                  "PRIMARY KEY (Nome));")
 
 database.execute("CREATE TABLE IF NOT EXISTS APPELLOBAMBINO("
-                 "IdBambino CHAR(5) REFERENCES BAMBINO(Matricola),"
+                 "IdBambino CHAR(5) DEFAULT '00002' REFERENCES BAMBINO(Matricola) ON DELETE SET DEFAULT,"
                  "Data DATA NOT NULL,"
                  "Presenza BIT NOT NULL,"
                  "PRIMARY KEY (IdBambino, Data));")
 
 database.execute("CREATE TABLE IF NOT EXISTS APPELLOANIMATORE("
-                 "IdAnimatore CHAR(5) REFERENCES ANIMATORE(Matricola),"
+                 "IdAnimatore CHAR(5) DEFAULT '00003' REFERENCES ANIMATORE(Matricola) ON DELETE SET DEFAULT,"
                  "Data DATA NOT NULL,"
                  "Presenza BIT NOT NULL,"
                  "PRIMARY KEY (IdAnimatore, Data));")
 
 database.execute("CREATE TABLE IF NOT EXISTS APPELLOPERSONALE("
-                 "IdPersonale CHAR(5) REFERENCES PERSONALE(Matricola),"
+                 "IdPersonale CHAR(5) DEFAULT '00000' REFERENCES PERSONALE(Matricola) ON DELETE SET DEFAULT,"
                  "Data DATA NOT NULL,"
                  "Presenza BIT NOT NULL,"
                  "PRIMARY KEY (IdPersonale, Data));")
@@ -167,14 +167,27 @@ database.execute("CREATE TABLE IF NOT EXISTS PARTECIPA("
                  "FOREIGN KEY (TipoEvento,Luogo,Data,Ora) "
                  "REFERENCES EVENTO(TipoEvento,Luogo,Data,Ora));")
 
-# inserisco il leader se non già inserito
+# inizializzo il db inserendo un leader e un leader , un bambino e un animatore "fantocci" per gestire l'eliminazione
 try:
     cursor.execute(
         "INSERT INTO PERSONALE VALUES ('00001','admin','Pinco','Pallino','admin@gmail.com','0000-1-1','via bella n.5',03598456,340586969,'leader');")
-    cursor.fetchall()
 except:
     pass
-
+try:
+    cursor.execute(
+        "INSERT INTO PERSONALE VALUES ('00000','admin','00000','XXXXXX','xxx@xxx.com','0000-1-1','xxxxxx',00000000,0000000,'leader');")
+except:
+    pass
+try:
+    cursor.execute(
+        "INSERT INTO BAMBINO VALUES ('00002','00002','XXXXX','XXXXX','XXX@XX.IT','0000-1-1','XXXXX',00000,0000,'xxxx','yyyy','NULL')")
+except:
+    pass
+try:
+    cursor.execute(
+        "INSERT INTO ANIMATORE VALUES ('00003','00003','XXXXX','XXXXX','XXXXX@XX.it','0000-1-1','XXXXX',00000,0000,'00000','NULL');")
+except:
+    pass
 database.commit()
 
 # calcolo numero partecipanti
@@ -402,6 +415,8 @@ def home_segretaria():
 
     elif request.method == 'POST' and 'form_elimina' in request.form:
         database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = 1")
+
         cursor = database.cursor();
         cursor.execute("DELETE FROM PERSONALE WHERE Matricola= ?;", [session['matricola']])
         database.commit()
@@ -471,6 +486,8 @@ def home_responsabile():
 
     elif request.method == 'POST' and 'form_elimina' in request.form:
         database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = 1")
+
         cursor = database.cursor();
         cursor.execute("DELETE FROM PERSONALE WHERE Matricola= ?;", [session['matricola']])
         database.commit()
@@ -546,6 +563,8 @@ def home_esterno():
 
     elif request.method == 'POST' and 'form_elimina' in request.form:
         database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = 1")
+
         cursor = database.cursor();
         cursor.execute("DELETE FROM PERSONALE WHERE Matricola= ?;", [session['matricola']])
         database.commit()
@@ -617,6 +636,8 @@ def home_animatore():
 
     elif request.method == 'POST' and 'form_elimina' in request.form:
         database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = 1")
+
         cursor = database.cursor();
         cursor.execute("DELETE FROM PERSONALE WHERE Matricola= ?;", [session['matricola']])
         database.commit()
@@ -674,6 +695,8 @@ def home_bambino():
 
     elif request.method == 'POST' and 'form_elimina' in request.form:
         database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = 1")
+
         cursor = database.cursor();
         cursor.execute("DELETE FROM PERSONALE WHERE Matricola= ?;", [session['matricola']])
         database.commit()
@@ -738,8 +761,6 @@ def form_inserisci_segretaria():
         cursor.execute(
             "INSERT INTO PERSONALE VALUES (?,?,?,?,?,?,?,?,?,?);",
             [matricola, password, nome, cognome, email, data, indirizzo, telefono, cellulare, 'segretaria'])
-
-        cursor.fetchall()
         database.commit()
         database.close()
 
@@ -784,7 +805,6 @@ def form_inserisci_responsabile():
             "INSERT INTO PERSONALE VALUES (?,?,?,?,?,?,?,?,?,?);",
             [matricola, password, nome, cognome, email, data, indirizzo, telefono, cellulare, 'responsabile'])
 
-        cursor.fetchall()
         database.commit()
         database.close()
 
@@ -833,7 +853,6 @@ def form_inserisci_esterno():
             "INSERT INTO PERSONALE VALUES (?,?,?,?,?,?,?,?,?,?);",
             [matricola, password, nome, cognome, email, data, indirizzo, telefono, cellulare, 'esterno'])
 
-        cursor.fetchall()
         database.commit()
 
         cursor = database.cursor()
@@ -842,8 +861,6 @@ def form_inserisci_esterno():
             "INSERT INTO GESTISCE VALUES (?,?,?,?,?);",
             [matricola, str(nomelaboratorio).split()[0], str(nomelaboratorio).split()[3],
              str(nomelaboratorio).split()[4], str(nomelaboratorio).split()[5]])
-
-        cursor.fetchall()
         database.commit()
 
         database.close()
@@ -860,7 +877,7 @@ def form_inserisci_esterno():
         database = sqlite3.connect(path)
         cursor = database.cursor()
         cursor.execute(
-            "SELECT TipoEvento, Descrizione,Luogo,Data,Ora FROM EVENTO WHERE TipoEvento > 200 and TipoEvento < 300")
+            "SELECT TipoEvento, Descrizione,Luogo,Data,Ora FROM EVENTO WHERE CAST(TipoEvento as INTEGER) > 200 and CAST(TipoEvento as INTEGER) < 300")
         laboratori = cursor.fetchall()
         database.close()
         return render_template("formInserisciEsterno.html",
@@ -899,8 +916,6 @@ def form_inserisci_animatore():
             "INSERT INTO ANIMATORE VALUES (?,?,?,?,?,?,?,?,?,?,?);",
             [matricola, password, nome, cognome, email, data, indirizzo, telefono, cellulare, matricolaresponsabile,
              nomesquadra])
-
-        cursor.fetchall()
         database.commit()
         database.close()
 
@@ -964,7 +979,6 @@ def form_inserisci_bambino():
              nominativopadre,
              nomesquadra])
 
-        cursor.fetchall()
         database.commit()
         database.close()
 
@@ -1017,7 +1031,6 @@ def form_crea_gita():
             cursor.execute(
                 "INSERT INTO EVENTO VALUES (?,?,?,?,?,?,?);",
                 [tipoGita, luogo, date, time, descrizione, 'NULL', session['matricola']])
-            cursor.fetchall()
             database.commit()
         except:
             flash("Attenzione: gita già inserita!")
@@ -1262,42 +1275,6 @@ def form_crea_squadra():
         return redirect(url_for('login'))
 
 
-def set_id_evento(tipoEvento):
-
-    if str(tipoEvento).split(",")[0].__contains__("CUCINA"):
-        return "201"
-    elif str(tipoEvento).split(",")[0].__contains__("PITTURA"):
-        return "202"
-    elif str(tipoEvento).split(",")[0].__contains__("CIRCO"):
-        return "203"
-    elif str(tipoEvento).split(",")[0].__contains__("COMPITI"):
-        return "204"
-    elif str(tipoEvento).split(",")[0].__contains__("MUSICA"):
-        return "205"
-    elif str(tipoEvento).split(",")[0].__contains__("ALTRO LABORATORIO"):
-        return "206"
-    elif str(tipoEvento).split(",")[0].__contains__("CALCIO"):
-        return "101"
-    elif str(tipoEvento).split(",")[0].__contains__("PALLAVOLO"):
-        return "102"
-    elif str(tipoEvento).split(",")[0].__contains__("PALLA PRIGIONIERA"):
-        return "103"
-    elif str(tipoEvento).split(",")[0].__contains__("CACCIA AL TESORO"):
-        return "104"
-    elif str(tipoEvento).split(",")[0].__contains__("ALTRO GIOCO"):
-        return "105"
-    elif str(tipoEvento).split(",")[0].__contains__("GITA IN MONTAGNA"):
-        return "1"
-    elif str(tipoEvento).split(",")[0].__contains__("GITA AL MARE"):
-        return "2"
-    elif str(tipoEvento).split(",")[0].__contains__("GITA AL LAGO"):
-        return "3"
-    elif str(tipoEvento).split(",")[0].__contains__("GITA CULTURALE"):
-        return "4"
-    elif str(tipoEvento).split(",")[0].__contains__("ALTRA GITA"):
-        return "5"
-
-
 @app.route('/formAggiungiMovimento', methods=['GET', 'POST'])
 def form_aggiungi_movimento():
     if request.method == 'POST':
@@ -1385,7 +1362,6 @@ def assegna_arbitraggio():
         database.execute("PRAGMA foreign_keys = 1")
 
         cursor = database.cursor()
-        print(idEvento + " ")
         try:
             cursor.execute(
                 "INSERT INTO ARBITRA(MatrResponsabile,TipoEvento,Luogo,Data, Ora) VALUES (?,?,?,?,?);",
@@ -1395,7 +1371,6 @@ def assegna_arbitraggio():
             database.commit()
         except Exception as e:
             flash("Attenzione: Arbitraggio già inserito!")
-            print(e)
         finally:
             database.close()
 
@@ -1437,9 +1412,9 @@ def form_aggiungi_appello():
         database.execute("PRAGMA foreign_keys = 1")
         cursor = database.cursor()
         if 'animatore' in session:
-            cursor.execute("SELECT Matricola FROM BAMBINO WHERE NomeSquadra = '" + session['nomeSquadra'] + "'")
+            cursor.execute("SELECT Matricola FROM BAMBINO WHERE NomeSquadra = ?", [session['nomeSquadra']])
         elif 'responsabile' in session:
-            cursor.execute("SELECT Matricola FROM ANIMATORE WHERE MatrResponsabile = '" + session['matricola'] + "'")
+            cursor.execute("SELECT Matricola FROM ANIMATORE WHERE MatrResponsabile = ?", [session['matricola']])
         rows = cursor.fetchall()
 
         try:
@@ -1470,7 +1445,7 @@ def form_aggiungi_appello():
         database = sqlite3.connect(path)
         cursor = database.cursor()
         cursor.execute(
-            "SELECT Matricola, Nome, Cognome FROM BAMBINO WHERE NomeSquadra = '" + session['nomeSquadra'] + "'")
+            "SELECT Matricola, Nome, Cognome FROM BAMBINO WHERE NomeSquadra = ?", [session['nomeSquadra']])
         rows = cursor.fetchall()
         database.close()
 
@@ -1493,7 +1468,7 @@ def form_aggiungi_appello():
         database = sqlite3.connect(path)
         cursor = database.cursor()
         cursor.execute(
-            "SELECT Matricola, Nome, Cognome FROM ANIMATORE WHERE MatrResponsabile = '" + session['matricola'] + "'")
+            "SELECT Matricola, Nome, Cognome FROM ANIMATORE WHERE MatrResponsabile = ?", [session['matricola']])
         rows = cursor.fetchall()
         database.close()
 
@@ -1523,12 +1498,13 @@ def form_mostra_appello():
         cursor = database.cursor()
         if 'animatore' in session:
             cursor.execute(
-                "SELECT A.IdBambino, B.Nome, B.Cognome, A.Presenza FROM BAMBINO B JOIN APPELLOBAMBINO A ON (A.IdBambino = B.Matricola) WHERE A.Data = '" + data + "'")
+                "SELECT A.IdBambino, B.Nome, B.Cognome, A.Presenza FROM BAMBINO B JOIN APPELLOBAMBINO A ON (A.IdBambino = B.Matricola) WHERE A.Data = ?",
+                [data])
             tipologia = session['nomeSquadra']
         elif 'responsabile' in session:
             cursor.execute(
-                "SELECT A.IdAnimatore, B.Nome, B.Cognome, A.Presenza FROM ANIMATORE B JOIN APPELLOANIMATORE A ON (A.IdAnimatore = B.Matricola) WHERE B.MatrResponsabile = '" +
-                session['matricola'] + "' AND A.Data = '" + data + "'")
+                "SELECT A.IdAnimatore, B.Nome, B.Cognome, A.Presenza FROM ANIMATORE B JOIN APPELLOANIMATORE A ON (A.IdAnimatore = B.Matricola) WHERE B.MatrResponsabile = ? AND A.Data = ?",
+                session['matricola'], [data])
             tipologia = "Animatori"
         elif 'leader' in session:
             cursor.execute(
@@ -1601,15 +1577,15 @@ def form_mostra_appello():
     else:
         return redirect(url_for('login'))
 
+
 @app.route('/formInserisciIscrizioneGita', methods=['GET', 'POST'])
 def form_iscrizione_gita():
     if request.method == 'POST':
         tipoEvento = request.form.get('gita')
 
-        idEvento =set_id_evento(tipoEvento)
+        idEvento = set_id_evento(tipoEvento)
         costo = request.form.get('costogita')
         dataiscrizione = request.form.get('dataiscrizione')
-
 
         database = sqlite3.connect(path)
         database.execute("PRAGMA foreign_keys = 1")
@@ -1619,15 +1595,15 @@ def form_iscrizione_gita():
         try:
             cursor.execute(
                 "INSERT INTO ISCRIZIONE(MatrBambino,TipoEvento,Luogo,Data, Ora, Costo,DataIscrizione) VALUES (?,?,?,?,?,?,?);",
-                [session['matricola'],idEvento, str(tipoEvento).split(",")[1].lstrip(), str(tipoEvento).split(",")[2].lstrip(),
-                 str(tipoEvento).split(",")[3].lstrip(),costo,dataiscrizione])
+                [session['matricola'], idEvento, str(tipoEvento).split(",")[1].lstrip(),
+                 str(tipoEvento).split(",")[2].lstrip(),
+                 str(tipoEvento).split(",")[3].lstrip(), costo, dataiscrizione])
 
             database.commit()
-        except Exception as e :
+        except Exception as e:
             flash("Attenzione: Errore! Iscrizione già inserita")
         finally:
             database.close()
-
 
     if 'bambino' in session:
         database = sqlite3.connect(path)
@@ -1638,7 +1614,7 @@ def form_iscrizione_gita():
                        "JOIN BAMBINO B ON B.NomeSquadra = P.NomeSquadra WHERE B.Matricola = ? AND CAST(E.TipoEvento as INTEGER) <101"
                        " AND (?,E.TipoEvento, E.Luogo, E.Data, E.Ora) NOT IN (SELECT I.MatrBambino,I.TipoEvento, I.Luogo, I.Data, I.Ora FROM ISCRIZIONE I)  "
                        "ORDER BY E.Data ASC, E.Ora ASC",
-                       [session['matricola'],session['matricola']])
+                       [session['matricola'], session['matricola']])
         listgite = cursor.fetchall()
         database.close()
 
@@ -1665,16 +1641,17 @@ def form_assegna_punteggio():
         idEvento = set_id_evento(tipoEvento)
         database = sqlite3.connect(path)
         cursor = database.cursor()
-        cursor.execute("SELECT NomeSquadra FROM PARTECIPA WHERE TipoEvento ='" + idEvento + "' AND Luogo ='" + str(tipoEvento).split(",")[1].lstrip() + "' AND Data ='" + str(tipoEvento).split(",")[2].lstrip() + "' AND Ora ='" + str(tipoEvento).split(",")[3].lstrip() + "'" )
+        cursor.execute("SELECT NomeSquadra FROM PARTECIPA WHERE TipoEvento = ? AND Luogo = ? AND Data = ? AND Ora = ?",
+                       [idEvento, str(tipoEvento).split(",")[1].lstrip(), str(tipoEvento).split(",")[
+                           2].lstrip(), str(tipoEvento).split(",")[3].lstrip()])
         listsquadre = cursor.fetchall()
         database.close()
-        print("EVENTO " + tipoEvento)
         return render_template("formAssegnaPunteggio.html", usernamesession=session['nome'] + " " + session
-                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
                                indirizzo=session['indirizzo'],
                                telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
-                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader,
                                totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
@@ -1691,12 +1668,17 @@ def form_assegna_punteggio():
         idEvento = set_id_evento(tipoEvento)
         database = sqlite3.connect(path)
         cursor = database.cursor()
-        cursor.execute("SELECT Punteggio FROM EVENTO WHERE TipoEvento ='" + idEvento + "' AND Luogo ='" + str(tipoEvento).split(",")[1].lstrip() + "' AND Data ='" + str(tipoEvento).split(",")[2].lstrip() + "' AND Ora ='" + str(tipoEvento).split(",")[3].lstrip() + "'" )
+        cursor.execute("SELECT Punteggio FROM EVENTO WHERE TipoEvento = ? AND Luogo = ? AND Data = ? AND Ora = ?",
+                       [idEvento, str(tipoEvento).split(",")[1].lstrip(), str(tipoEvento).split(",")[
+                           2].lstrip(), str(tipoEvento).split(",")[3].lstrip()])
         punteggio = cursor.fetchone()
         cursor = database.cursor()
-        cursor.execute("UPDATE SQUADRA SET PUNTEGGIO = PUNTEGGIO + " + str(punteggio[0]) +" WHERE Nome = '"+ squadra +"'")
+        cursor.execute(
+            "UPDATE SQUADRA SET PUNTEGGIO = PUNTEGGIO + " + str(punteggio[0]) + " WHERE Nome = ? ", [squadra])
         cursor = database.cursor()
-        cursor.execute("UPDATE EVENTO SET Punteggio = 0 WHERE TipoEvento ='" + idEvento + "' AND Luogo ='" + str(tipoEvento).split(",")[1].lstrip() + "' AND Data ='" + str(tipoEvento).split(",")[2].lstrip() + "' AND Ora ='" + str(tipoEvento).split(",")[3].lstrip() + "'")
+        cursor.execute("UPDATE EVENTO SET Punteggio = 0 WHERE TipoEvento = ?  AND Luogo = ? AND Data = ? AND Ora = ?",
+                       [idEvento, str(tipoEvento).split(",")[1].lstrip(), str(tipoEvento).split(",")[
+                           2].lstrip(), str(tipoEvento).split(",")[3].lstrip()])
 
         database.commit()
         database.close()
@@ -1704,17 +1686,18 @@ def form_assegna_punteggio():
     if 'responsabile' in session:
         database = sqlite3.connect(path)
         cursor = database.cursor()
-        cursor.execute("SELECT E.TipoEvento, E.Luogo, E.Data, E.Ora, E.Descrizione FROM ARBITRA A JOIN EVENTO E ON (E.TipoEvento, E.Luogo, E.Data, E.Ora)=(A.TipoEvento, A.Luogo, A.Data, A.Ora) WHERE A.MatrResponsabile = ? AND PUNTEGGIO > 0 ORDER BY E.Data ASC, E.Ora ASC",
+        cursor.execute(
+            "SELECT E.TipoEvento, E.Luogo, E.Data, E.Ora, E.Descrizione FROM ARBITRA A JOIN EVENTO E ON (E.TipoEvento, E.Luogo, E.Data, E.Ora)=(A.TipoEvento, A.Luogo, A.Data, A.Ora) WHERE A.MatrResponsabile = ? AND PUNTEGGIO > 0 ORDER BY E.Data ASC, E.Ora ASC",
             [session['matricola']])
         listgiochi = cursor.fetchall()
 
         database.close()
         return render_template("formAssegnaPunteggio.html", usernamesession=session['nome'] + " " + session
-                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
                                indirizzo=session['indirizzo'],
                                telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
-                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader,
                                totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
@@ -1726,6 +1709,7 @@ def form_assegna_punteggio():
     else:
         return redirect(url_for('login'))
 
+
 @app.route('/formMostraClassifica', methods=['GET', 'POST'])
 def form_mostra_classifica():
     if 'responsabile' in session:
@@ -1736,11 +1720,11 @@ def form_mostra_classifica():
 
         database.close()
         return render_template("formMostraClassifica.html", usernamesession=session['nome'] + " " + session
-                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
                                indirizzo=session['indirizzo'],
                                telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
-                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader,
                                totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
@@ -1751,6 +1735,7 @@ def form_mostra_classifica():
     else:
         return redirect(url_for('login'))
 
+
 @app.route('/formMostraAppelloGita', methods=['GET', 'POST'])
 def form_mostra_appello_gita():
     if request.method == 'POST':
@@ -1758,22 +1743,29 @@ def form_mostra_appello_gita():
         idEvento = set_id_evento(tipoEvento)
         database = sqlite3.connect(path)
         cursor = database.cursor()
-        cursor.execute("SELECT B.Matricola, B.Nome, B.Cognome, B.DataNascita, B.NumTelefono FROM BAMBINO B JOIN ISCRIZIONE I ON (B.Matricola) = (I.MatrBambino) WHERE I.TipoEvento ='" + idEvento + "' AND I.Luogo ='" + str(tipoEvento).split(",")[1].lstrip() + "' AND I.Data ='" + str(tipoEvento).split(",")[2].lstrip() + "' AND I.Ora ='" + str(tipoEvento).split(",")[3].lstrip() + "' AND B.NomeSquadra = '"+ session['nomeSquadra']+"'" )
+
+        cursor.execute(
+            "SELECT B.Matricola, B.Nome, B.Cognome, B.DataNascita, B.NumTelefono FROM BAMBINO B JOIN ISCRIZIONE I ON (B.Matricola) = (I.MatrBambino) WHERE I.TipoEvento = ? AND I.Luogo = ?  AND I.Data = ? "
+            " AND I.Ora = ?  AND B.NomeSquadra = ? ", [idEvento, str(tipoEvento).split(",")[1].lstrip(),
+                                                       str(tipoEvento).split(",")[2].lstrip(),
+                                                       str(tipoEvento).split(",")[3].lstrip(), session['nomeSquadra']])
         listbimbi = cursor.fetchall()
+
+        print(listbimbi)
+
         cursor = database.cursor()
-        cursor.execute("SELECT TipoEvento, Luogo, Data, Ora FROM PARTECIPA  WHERE NomeSquadra ='" + session[
-            'nomeSquadra'] + "' AND TipoEvento > 0 AND TipoEvento < 100  ")
+        cursor.execute(
+            "SELECT TipoEvento, Luogo, Data, Ora FROM PARTECIPA  WHERE NomeSquadra = ?  AND CAST(TipoEvento as INTEGER) > 0 AND CAST(TipoEvento as INTEGER) < 101 ",
+            [session['nomeSquadra']])
         listgite = cursor.fetchall()
         database.close()
-        print("EVENTO " + tipoEvento)
-        for bimbi in listbimbi:
-            print("Bimbo " + bimbi[0])
+
         return render_template("formMostraAppelloGita.html", usernamesession=session['nome'] + " " + session
-                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
                                indirizzo=session['indirizzo'],
                                telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
-                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader,
                                totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
@@ -1788,16 +1780,18 @@ def form_mostra_appello_gita():
     if 'animatore' in session:
         database = sqlite3.connect(path)
         cursor = database.cursor()
-        cursor.execute("SELECT TipoEvento, Luogo, Data, Ora FROM PARTECIPA  WHERE NomeSquadra ='"+ session['nomeSquadra'] + "' AND TipoEvento > 0 AND TipoEvento < 100  ")
+        cursor.execute(
+            "SELECT TipoEvento, Luogo, Data, Ora FROM PARTECIPA  WHERE NomeSquadra = ?  AND CAST(TipoEvento as INTEGER) > 0 AND CAST(TipoEvento as INTEGER) < 101",
+            [session['nomeSquadra']])
         listgite = cursor.fetchall()
 
         database.close()
         return render_template("formMostraAppelloGita.html", usernamesession=session['nome'] + " " + session
-                                ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
+        ['cognome'], matricola=session['matricola'], password=session['password'], nome=session['nome'],
                                cognome=session['cognome'], email=session['email'], data=session['dataNascita'],
                                indirizzo=session['indirizzo'],
                                telefono=session['numTelefono'], cellulare=session['numCellulare'], totalepartecipanti=(
-                                totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
+                    totale_leader + totale_segretarie + totale_esterni + totale_responsabili + totale_animatori + totale_bambini),
                                totaleleader=totale_leader,
                                totalesegretarie=totale_segretarie,
                                totaleresponsabili=totale_responsabili,
@@ -1809,4 +1803,40 @@ def form_mostra_appello_gita():
     else:
         return redirect(url_for('login'))
 
-app.run(host="127.0.0.1", port=5000, debug="true")
+
+def set_id_evento(tipoEvento):
+    if str(tipoEvento).split(",")[0].__contains__("CUCINA"):
+        return "201"
+    elif str(tipoEvento).split(",")[0].__contains__("PITTURA"):
+        return "202"
+    elif str(tipoEvento).split(",")[0].__contains__("CIRCO"):
+        return "203"
+    elif str(tipoEvento).split(",")[0].__contains__("COMPITI"):
+        return "204"
+    elif str(tipoEvento).split(",")[0].__contains__("MUSICA"):
+        return "205"
+    elif str(tipoEvento).split(",")[0].__contains__("ALTRO LABORATORIO"):
+        return "206"
+    elif str(tipoEvento).split(",")[0].__contains__("CALCIO"):
+        return "101"
+    elif str(tipoEvento).split(",")[0].__contains__("PALLAVOLO"):
+        return "102"
+    elif str(tipoEvento).split(",")[0].__contains__("PALLA PRIGIONIERA"):
+        return "103"
+    elif str(tipoEvento).split(",")[0].__contains__("CACCIA AL TESORO"):
+        return "104"
+    elif str(tipoEvento).split(",")[0].__contains__("ALTRO GIOCO"):
+        return "105"
+    elif str(tipoEvento).split(",")[0].__contains__("GITA IN MONTAGNA"):
+        return "1"
+    elif str(tipoEvento).split(",")[0].__contains__("GITA AL MARE"):
+        return "2"
+    elif str(tipoEvento).split(",")[0].__contains__("GITA AL LAGO"):
+        return "3"
+    elif str(tipoEvento).split(",")[0].__contains__("GITA CULTURALE"):
+        return "4"
+    elif str(tipoEvento).split(",")[0].__contains__("ALTRA GITA"):
+        return "5"
+
+
+app.run(host="127.0.0.1", port=5000)
