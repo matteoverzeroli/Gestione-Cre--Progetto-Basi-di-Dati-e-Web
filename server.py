@@ -732,7 +732,8 @@ def home_bambino():
 
 @app.route('/loginerrato', methods=['GET'])
 def loginerrato():
-    return render_template('loginerrato.html')
+    flash("ATTENZIONE MATRICOLA O PASSWORD ERRATI!!!")
+    return redirect(url_for('login'))
 
 
 @app.route('/logout', methods=['GET'])
