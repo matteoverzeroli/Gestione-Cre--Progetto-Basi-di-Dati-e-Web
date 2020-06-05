@@ -151,7 +151,6 @@ database.execute("CREATE TABLE IF NOT EXISTS ISCRIZIONE("
                  "Luogo VARCHAR(50) NOT NULL,"
                  "Data DATE NOT NULL,"
                  "Ora TIME NOT NULL,"
-                 "Costo FLOAT NOT NULL,"
                  "DataIscrizione DATE NOT NULL,"
                  "PRIMARY KEY (MatrBambino,TipoEvento,Luogo,Data,Ora),"
                  "FOREIGN KEY (TipoEvento,Luogo,Data,Ora) "
@@ -1585,7 +1584,6 @@ def form_iscrizione_gita():
         tipoEvento = request.form.get('gita')
 
         idEvento = set_id_evento(tipoEvento)
-        costo = request.form.get('costogita')
         dataiscrizione = request.form.get('dataiscrizione')
 
         database = sqlite3.connect(path)
@@ -1595,10 +1593,10 @@ def form_iscrizione_gita():
 
         try:
             cursor.execute(
-                "INSERT INTO ISCRIZIONE(MatrBambino,TipoEvento,Luogo,Data, Ora, Costo,DataIscrizione) VALUES (?,?,?,?,?,?,?);",
+                "INSERT INTO ISCRIZIONE(MatrBambino,TipoEvento,Luogo,Data, Ora, DataIscrizione) VALUES (?,?,?,?,?,?);",
                 [session['matricola'], idEvento, str(tipoEvento).split(",")[1].lstrip(),
                  str(tipoEvento).split(",")[2].lstrip(),
-                 str(tipoEvento).split(",")[3].lstrip(), costo, dataiscrizione])
+                 str(tipoEvento).split(",")[3].lstrip(),dataiscrizione])
 
             database.commit()
         except Exception as e:
