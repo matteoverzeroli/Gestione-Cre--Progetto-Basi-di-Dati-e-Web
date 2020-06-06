@@ -1504,7 +1504,7 @@ def form_mostra_appello():
         elif 'responsabile' in session:
             cursor.execute(
                 "SELECT A.IdAnimatore, B.Nome, B.Cognome, A.Presenza FROM ANIMATORE B JOIN APPELLOANIMATORE A ON (A.IdAnimatore = B.Matricola) WHERE B.MatrResponsabile = ? AND A.Data = ?",
-                session['matricola'], [data])
+                [session['matricola'], data])
             tipologia = "Animatori"
         elif 'leader' in session:
             cursor.execute(
@@ -1838,4 +1838,4 @@ def set_id_evento(tipoEvento):
         return "5"
 
 
-app.run(host="127.0.0.1", port=5000)
+app.run(host="127.0.0.1", port=5000, debug='true')
