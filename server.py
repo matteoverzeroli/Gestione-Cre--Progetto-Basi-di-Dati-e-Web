@@ -169,7 +169,7 @@ database.execute("CREATE TABLE IF NOT EXISTS PARTECIPA("
 # inizializzo il db inserendo un leader e un leader , un bambino e un animatore "fantocci" per gestire l'eliminazione
 try:
     cursor.execute(
-        "INSERT INTO PERSONALE VALUES ('00001','admin','Pinco','Pallino','admin@gmail.com','0000-1-1','via bella n.5',03598456,340586969,'leader');")
+        "INSERT INTO PERSONALE VALUES ('00001','admin','Pinco','Pallino','admin@gmail.com','0000-1-1','via bella n.5, Dalmine',03598456,340586969,'leader');")
 except:
     pass
 try:
@@ -856,11 +856,11 @@ def form_inserisci_esterno():
         database.commit()
 
         cursor = database.cursor()
-
+        print(nomelaboratorio)
         cursor.execute(
             "INSERT INTO GESTISCE VALUES (?,?,?,?,?);",
-            [matricola, str(nomelaboratorio).split()[0], str(nomelaboratorio).split()[3],
-             str(nomelaboratorio).split()[4], str(nomelaboratorio).split()[5]])
+            [matricola, str(nomelaboratorio).split(",")[0].lstrip(), str(nomelaboratorio).split(",")[3].lstrip(),
+             str(nomelaboratorio).split(",")[4].lstrip(), str(nomelaboratorio).split(",")[5].lstrip()])
         database.commit()
 
         database.close()
