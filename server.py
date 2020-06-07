@@ -1596,7 +1596,7 @@ def form_iscrizione_gita():
                 "INSERT INTO ISCRIZIONE(MatrBambino,TipoEvento,Luogo,Data, Ora, DataIscrizione) VALUES (?,?,?,?,?,?);",
                 [session['matricola'], idEvento, str(tipoEvento).split(",")[1].lstrip(),
                  str(tipoEvento).split(",")[2].lstrip(),
-                 str(tipoEvento).split(",")[3].lstrip(),dataiscrizione])
+                 str(tipoEvento).split(",")[3].lstrip(), dataiscrizione])
 
             database.commit()
         except Exception as e:
@@ -1838,4 +1838,4 @@ def set_id_evento(tipoEvento):
         return "5"
 
 
-app.run(host="127.0.0.1", port=5000, debug='true')
+app.run(host="127.0.0.1", port=5000)

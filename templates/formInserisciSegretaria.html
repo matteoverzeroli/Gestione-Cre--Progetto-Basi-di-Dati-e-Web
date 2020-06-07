@@ -16,22 +16,6 @@
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-    <style>
-        .bd-placeholder-img {
-            font-size: 1.125rem;
-            text-anchor: middle;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-
-        @media (min-width: 768px) {
-            .bd-placeholder-img-lg {
-                font-size: 3.5rem;
-            }
-        }
-    </style>
     <!-- Custom styles for this template -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}"/>
 
@@ -239,7 +223,8 @@
                 </div>
                 <div class="form-group">
                     <label for="telefono">Numero di telefono</label>
-                    <input type="number" name="telefono" class="form-control" id="telefono" placeholder="035303030" required>
+                    <input type="number" name="telefono" class="form-control" id="telefono" placeholder="035303030"
+                           required>
                 </div>
                 <div class="form-group">
                     <label for="cellulare">Numero di cellulare</label>
