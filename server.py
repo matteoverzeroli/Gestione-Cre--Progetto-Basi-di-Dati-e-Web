@@ -855,7 +855,6 @@ def form_inserisci_esterno():
         database.commit()
 
         cursor = database.cursor()
-        print(nomelaboratorio)
         cursor.execute(
             "INSERT INTO GESTISCE VALUES (?,?,?,?,?);",
             [matricola, str(nomelaboratorio).split(",")[0].lstrip(), str(nomelaboratorio).split(",")[3].lstrip(),
@@ -1748,8 +1747,6 @@ def form_mostra_appello_gita():
                                                        str(tipoEvento).split(",")[2].lstrip(),
                                                        str(tipoEvento).split(",")[3].lstrip(), session['nomeSquadra']])
         listbimbi = cursor.fetchall()
-
-        print(listbimbi)
 
         cursor = database.cursor()
         cursor.execute(
